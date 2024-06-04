@@ -28,7 +28,7 @@
                 <td>${{ order.total }}</td>
                 <td>{{ order.fecha_pedido.strftime('%d-%m-%Y') }}</td>
                 <td>{{ order.fecha_entrega }}</td>
-                <td style="color: {% if order.estado == 'Entregado' %}#118632{% elif order.estado == 'Cancelado' %}#D71A1AF2{% elif order.estado == 'En camino' %}{% elif order.estado == 'Creada' %}blue{% else %}black{% endif %}"><b>{{ order.estado }}</b></td>
+                <td style="color: {% if order.estado == 'Entregado' %}#118632{% elif order.estado == 'Cancelado' %}#D71A1AF2{% elif order.estado == 'En camino' %}#FF8832{% elif order.estado == 'Creado' %}blue{% else %}black{% endif %}"><b>{{ order.estado }}</b></td>
                 <td><a href="{{ order.carta_representante }}">Carta</a></td>
                 <td><a href="{{ order.carta_respuesta }}">Carta Respuesta</a></td>
                 <td>

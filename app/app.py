@@ -107,8 +107,8 @@ class OrderStatus(Enum):
     ENTREGADO = "Entregado"
     EN_CAMINO = "En camino"
     CANCELADO = "Cancelado"
-    CREADA = "Creada"
-    RECHAZADA = "Rechazada"
+    CREADA = "Creado"
+    RECHAZADA = "Rechazado"
 
 
 class Signature(db.Model):
@@ -323,7 +323,9 @@ def requires_admin_email():
             if session.get('user_email') != ADMIN_EMAIL:
                 return redirect(url_for('representante'))
             return func(*args, **kwargs)
+
         return decorated_function
+
     return decorator
 
 
@@ -451,7 +453,8 @@ def token_required(f):
         if not token:
             return render_template(LOGIN_URL_REPRESENTATE)
         try:
-            decoded_token = jwt.decode(token, options={"verify_signature": False})  # Decode the token without verifying signature
+            decoded_token = jwt.decode(token, options={
+                "verify_signature": False})  # Decode the token without verifying signature
             expiration_time = datetime.utcfromtimestamp(decoded_token['exp'])
             current_time = datetime.utcnow()
             if expiration_time > current_time:
@@ -462,6 +465,7 @@ def token_required(f):
         except jwt.ExpiredSignatureError:
             return render_template(LOGIN_URL_REPRESENTATE,
                                    error="Sesión Expirada. Ingrese sus datos de nuevo")
+
     return decorated_function
 
 
@@ -597,7 +601,7 @@ def insumos_representante_list():
 @token_required
 @requires_admin_email()
 def pedidos():
-    return render_template('orders_admin.html')
+    return render_template('orders_admin.html', admin_user=True)
 
 
 @app.route('/pedidos_representante', methods=["GET"])
@@ -629,7 +633,7 @@ def orders_admin_list():
                 "fecha_entrega": order.estimated_delivery_date if order.estimated_delivery_date else "",
                 "estado": order.status.value,
                 "carta_representante": url_for("show_pdf", order_id=order.id),
-                "carta_respuesta": ""
+                "carta_respuesta": url_for("show_pdf_response_letter", order_id=order.id) if order.letter_response else '',
             })
         return render_template('orders_table.html',
                                orders=new_dict_orders_list,
@@ -725,7 +729,6 @@ def add_insumos_records():
 @app.route('/add_order_record', methods=["POST"])
 @token_required
 def add_order_record():
-
     """
     Adding an Order record to the datatabase
     """
@@ -854,6 +857,63 @@ def edit_insumo(insumo_id):
             error=True)
 
 
+@app.route('/edit_order/<int:order_id>', methods=["GET", "POST"])
+@token_required
+@requires_admin_email()
+def edit_order(order_id):
+    """
+    Editing an Insumo record based on its ID
+    """
+    estimated_delivery_date = request.form.get('estimated_delivery_date')
+    status = request.form.get('status_order')
+    try:
+        with app.app_context():
+            order = Order.query.get(order_id)
+            if request.method == "POST":
+                order.estimated_delivery_date = estimated_delivery_date
+                if status == OrderStatus.EN_CAMINO.name:
+                    signature = Signature.query.filter_by(user_email=order.user_email).first()
+                    representante = BayerUser.query.filter_by(email=order.user_email).first()
+                    representante_signature = base64.b64encode(signature.signature_image).decode('utf-8')
+                    pdf_data = generate_letter_response(
+                        order_id=order_id,
+                        medico_solicitante=order.doctor_name,
+                        posicion_medico=order.doctor_position,
+                        nombre_institucion=order.delivery_institute,
+                        representante_signature=representante_signature,
+                        nombre_representante=representante.name
+                    )
+                    order.status = OrderStatus.EN_CAMINO
+                    order.letter_response = pdf_data
+                    order.letter_response_date = datetime.now().date()
+                else:
+                    order.status = status
+                db.session.commit()
+                return render_template(
+                    "custom_alert_message.html",
+                    message="Pedido actualizado correctamente!",
+                    order_id=order_id,
+                    estimated_delivery_date=order.estimated_delivery_date,
+                    statuses=[status for status in OrderStatus],
+                    actual_status=order.status.value,
+                    error=False)
+            else:
+                return render_template(
+                    'edit_order_admin.html',
+                    order_id=order_id,
+                    estimated_delivery_date=order.estimated_delivery_date,
+                    statuses=[status for status in OrderStatus],
+                    actual_status=order.status.value,
+                    error=False
+                )
+    except Exception as e:
+        message = str(e)
+        return render_template(
+            "custom_alert_message.html",
+            message=e,
+            error=True)
+
+
 # Route to upload a file
 @app.route('/upload_signature', methods=['POST'])
 @token_required
@@ -905,6 +965,27 @@ def generate_letter_for_order(
     return pdf.getvalue()
 
 
+def generate_letter_response(
+        order_id: int,
+        medico_solicitante: str,
+        posicion_medico: str,
+        nombre_institucion: str,
+        nombre_representante: str,
+        representante_signature
 
-
-
+):
+    letter_html_response_rendered = render_template(
+        'letter_response_admin.html',
+        order_id=order_id,
+        actual_date=date.today(),
+        medico_solicitante=medico_solicitante,
+        posicion_medico=posicion_medico,
+        nombre_institucion=nombre_institucion,
+        representante_signature=representante_signature,
+        nombre_representante=nombre_representante
+    )
+    pdf = BytesIO()
+    pisa_status = pisa.CreatePDF(BytesIO(letter_html_response_rendered.encode('utf-8')), dest=pdf)
+    if pisa_status.err:
+        raise ValueError(pisa_status.err)
+    return pdf.getvalue()

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CARTA RESPUESTA #{{ order_id }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            width: 100%;
+            margin: 0 auto;
+        }
+        .row {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .col {
+            display: inline-block;
+            vertical-align: top;
+        }
+        .col:first-child {
+            width: 20%;
+        }
+        .col:last-child {
+            width: 75%;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        #tr_table_insumos th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        img {
+            max-width: 100px;
+            max-height: 100px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            Logo de Bayer
+        </div>
+        <div class="col">
+            Bayer de Mélaco, SA de E V ~ Miguel de Cervantes Saavedra 259, Col Granada Miguel Hidalgo, Ciudad de México, México.
+        </div>
+    </div>
+    <div class="row">
+        Fecha: {{ actual_date }}
+    </div>
+    <div class="row">
+        CARTA RESPUESTA #{{ order_id }}
+    </div>
+
+    <div class="row">
+        En relación con la solicitud de apoyo de {{ nombre_representante }}, hacemos de su conocimiento que la misma ha sido aprobada conforme al procedimiento interno de Bayer, por lo que coordinaremos con la Institución la forma en que se entregará éste apoyo.
+        En virtud de lo anterior, mediante la firma de recepción de la presente, en representación de la Institución, usted reconoce que el objetivo del apoyo tiene como objetivo su uso para beneficio directo de los pacientes de la Institución y mejora en la calidad de atención a los pacientes de la institución, por lo que acepto y me obligo a los siguientes lineamientos:<br>
+        Este apoyo no constituye una obligación o incentivo para recomendar, prescribir, adquirir, suministrar, vender o administrar cualquiera de los productos de Bayer.
+        Informar a las autoridades correspondientes del hospital al cual me encuentre adscrito durante la atención de dichos pacientes sobre el apoyo que Bayer a proporcionado, conforme dichas notificaciones sean requeridas por la normatividad aplicable.<br>
+        El apoyo solicitado no representa conflicto de interés según se defina en la normatividad legal. En caso de que la recepción de dicho apoyo sea considerado como un “conflicto de intereses”, me obligo a informar a Bayer previo a la recepción de este, con el fin de evaluar las medidas necesarias para la mitigación de riesgos.<br>
+        Si durante mi práctica médica soy considerado como servidor o funcionario público, me obligo a informar sobre la recepción de dicho apoyo a mi superior jerárquico o institución de gobierno para que le preste servicios y, en su caso, obtener todas las aprobaciones necesarias incluso aunque el beneficiario del apoyo sea el paciente.<br>
+    </div>
+
+    <div class="row">
+        Nombre de solicitante: {{ medico_solicitante }} <br>
+        Posición: {{ posicion_medico }} <br>
+        Nombre de la Institución: {{ nombre_institucion }} <br>
+    </div>
+    <div class="row">
+        <h6>En este acto expresamente acepto que la firma electrónica anterior sustituye a la firma autógrafa, por lo que reconozco su autenticidad, veracidad y origen de la misma, en términos de la legislación aplican</h6>
+    </div>
+    <div class="row">
+        <img src="data:image/png;base64,{{ representante_signature }}">
+    </div>
+
+</div>
+
+</body>
+</html>
