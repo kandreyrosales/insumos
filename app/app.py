@@ -646,6 +646,9 @@ def orders_representante_list():
         new_dict_orders_list_representante = []
         bayer_user = BayerUser.query.filter_by(email=email).first()
         for order in orders:
+            carta_respuesta = ""
+            if order.letter_response:
+                carta_respuesta = url_for("show_pdf_response_letter", order_id=order.id)
             new_dict_orders_list_representante.append({
                 "id": order.id,
                 "representante": bayer_user.name,
@@ -656,7 +659,7 @@ def orders_representante_list():
                 "fecha_entrega": order.estimated_delivery_date if order.estimated_delivery_date else "",
                 "estado": order.status.value,
                 "carta_representante": url_for("show_pdf", order_id=order.id),
-                "carta_respuesta": url_for("show_pdf_response_letter", order_id=order.id),
+                "carta_respuesta": carta_respuesta,
             })
         return render_template('orders_table_representante.html',
                                orders=new_dict_orders_list_representante,
