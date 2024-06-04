@@ -44,7 +44,7 @@
                     <span>Insumos</span>
                 </a>
             </li>
-            <li class="nav-item"><a href={% if admin_user %}"{{ url_for('pedidos') }}"{% else %}{{ url_for('pedidos_representante') }}{% endif %} class="btn btn-lg border-0 custom_btn_navbar custom_btn_navbar_conciliaciones" id="btn-conciliations-page">
+            <li class="nav-item"><a href={% if admin_user %}"{{ url_for('pedidos') }}"{% else %}{{ url_for('pedidos_representante') }}{% endif %} class="btn btn-lg border-0 custom_btn_navbar">
                 <svg id="icon_conciliaciones" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect class="rect_conciliaciones_icon" x="2" y="2" width="20" height="20" rx="5" stroke="#231F20" stroke-width="1.5"/>
                     <path class="rect_conciliaciones_icon" d="M8 17L8 14" stroke="#231F20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>

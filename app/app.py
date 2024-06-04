@@ -901,7 +901,8 @@ def edit_order(order_id):
                 return render_template(
                     'admin/edit_order_admin.html',
                     order_id=order_id,
-                    estimated_delivery_date=order.estimated_delivery_date.strftime("%Y-%m-%d"),
+                    estimated_delivery_date=order.estimated_delivery_date.strftime("%Y-%m-%d")
+                    if order.estimated_delivery_date else '',
                     statuses=[status for status in OrderStatus],
                     actual_status=order.status.value,
                     error=False
