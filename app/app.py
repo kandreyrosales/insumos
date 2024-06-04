@@ -234,6 +234,7 @@ def initial_data():
             )
             db.session.add(bayer_user)
         db.session.commit()
+    return {"message": "Data inicial cargada!"}
 
 
 @app.route('/autocomplete')
