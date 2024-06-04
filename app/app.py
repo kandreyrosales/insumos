@@ -233,6 +233,10 @@ def initial_data():
                 email=fields[11]
             )
             db.session.add(bayer_user)
+        with open('static/assets/img/bayer_admin_signature.png', 'rb') as f:
+            image_data = f.read()
+            admin_signature = Signature(user_email=ADMIN_EMAIL, signature_image=image_data)
+            db.session.add(admin_signature)
         db.session.commit()
     return {"message": "Data inicial cargada!"}
 
