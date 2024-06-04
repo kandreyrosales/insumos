@@ -636,12 +636,12 @@ def orders_representante_list():
     with app.app_context():
         page = request.args.get('page', 1, type=int)
         per_page = 10  # Number of records per page
-        pagination = Order.query.paginate(page=page,
-                                          per_page=per_page,
-                                          max_per_page=10,
-                                          count=True,
-                                          error_out=False,
-                                          user_email=email)
+        pagination = Order.query.filter_by(user_email=email).paginate(
+            page=page,
+            per_page=per_page,
+            max_per_page=10,
+            count=True,
+            error_out=False)
         orders = pagination.items
         new_dict_orders_list_representante = []
         bayer_user = BayerUser.query.filter_by(email=email).first()
