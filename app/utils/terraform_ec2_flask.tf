@@ -168,7 +168,7 @@ resource "aws_instance" "flask_ec2_insumos" {
       "Group=ubuntu",
       "WorkingDirectory=/home/ubuntu/flask_app/app",
       "Environment=\"PATH=/home/ubuntu/flask_app/venv/bin\"",
-      "ExecStart=/home/ubuntu/.local/bin/gunicorn -w 1 -b 0.0.0.0:5000 -e bucket_name=${var.bucket_name} -e region_aws=${var.region_aws} -e accessKeyId=${var.accessKeyId} -e secretAccessKey=${var.secretAccessKey} -e db_endpoint=${aws_db_instance.posgtres_rds_insumos.endpoint} -e db_name=${var.db_name} -e db_username=${var.username_db} -e db_password=${var.password_db} app:app",
+      "ExecStart=/home/ubuntu/.local/bin/gunicorn -w 1 -b 0.0.0.0:5000 -e bucket_name=${var.bucket_name} -e region_aws=${var.region_aws} -e accessKeyId=${var.accessKeyId} -e secretAccessKey=${var.secretAccessKey} -e db_endpoint=${aws_db_instance.posgtres_rds_insumos.endpoint} -e client_id=${aws_cognito_user_pool_client.insumos_representante_cognito_client.id} -e user_pool=${aws_cognito_user_pool.insumos_representante.id} -e db_name=${var.db_name} -e db_username=${var.username_db} -e db_password=${var.password_db} app:app",
       "Restart=always",
 
       "[Install]",

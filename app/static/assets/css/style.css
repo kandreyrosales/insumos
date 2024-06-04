@@ -125,7 +125,7 @@ table tr:last-child td:last-child {
 #container-registro-representante, #container-login-representante{
     height: 100vh;
     margin: 0;
-    background-image: url('/static/assets/img/Background_login_Bayer.png');
+    background-image: url('app/static/assets/img/Background_login_Bayer.png');
     background-size: cover;
     /* 50% of the page's width */
     background-position: center;
