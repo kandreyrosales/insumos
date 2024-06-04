@@ -532,21 +532,21 @@ def send_reset_password_link():
 @token_required
 @requires_admin_email()
 def index_admin():
-    return render_template('index_admin.html', admin_user=True)
+    return render_template('admin/index_admin.html', admin_user=True)
 
 
 @app.route('/add_insumos_form', methods=["GET"])
 @token_required
 def add_insumos_form():
     vendors = Vendor.query.all()
-    return render_template("add_insumos_form.html",
+    return render_template("representante/add_insumos_form.html",
                            vendors=vendors)
 
 
 @app.route('/representante', methods=["GET"])
 @token_required
 def representante():
-    return render_template('representante_index.html', admin_user=False)
+    return render_template('representante/representante_index.html', admin_user=False)
 
 
 @app.route('/image/<int:signature_id>')
@@ -579,7 +579,7 @@ def insumos_list():
         per_page = 10  # Number of records per page
         pagination = Insumo.query.paginate(page=page, per_page=per_page, max_per_page=10, count=True, error_out=False)
         insumos = pagination.items
-        return render_template('insumos_table.html',
+        return render_template('admin/insumos_table.html',
                                insumos=insumos,
                                pagination=pagination)
 
@@ -592,7 +592,7 @@ def insumos_representante_list():
         per_page = 10  # Number of records per page
         pagination = Insumo.query.paginate(page=page, per_page=per_page, max_per_page=10, count=True, error_out=False)
         insumos = pagination.items
-        return render_template('insumos_table_representante.html',
+        return render_template('representante/insumos_table_representante.html',
                                insumos=insumos,
                                pagination=pagination)
 
@@ -601,13 +601,13 @@ def insumos_representante_list():
 @token_required
 @requires_admin_email()
 def pedidos():
-    return render_template('orders_admin.html', admin_user=True)
+    return render_template('admin/orders_admin.html', admin_user=True)
 
 
 @app.route('/pedidos_representante', methods=["GET"])
 @token_required
 def pedidos_representante():
-    return render_template('orders_representante.html',
+    return render_template('representante/orders_representante.html',
                            user_admin=False)
 
 
@@ -635,7 +635,7 @@ def orders_admin_list():
                 "carta_representante": url_for("show_pdf", order_id=order.id),
                 "carta_respuesta": url_for("show_pdf_response_letter", order_id=order.id) if order.letter_response else '',
             })
-        return render_template('orders_table.html',
+        return render_template('admin/orders_table.html',
                                orders=new_dict_orders_list,
                                pagination=pagination)
 
@@ -672,7 +672,7 @@ def orders_representante_list():
                 "carta_representante": url_for("show_pdf", order_id=order.id),
                 "carta_respuesta": carta_respuesta,
             })
-        return render_template('orders_table_representante.html',
+        return render_template('representante/orders_table_representante.html',
                                orders=new_dict_orders_list_representante,
                                pagination=pagination)
 
@@ -686,7 +686,7 @@ def generate_insumos_list_html():
     user_email = "kandreyrosales@gmail.com"
     user_signature = Signature.query.filter_by(user_email=user_email).first()
     return render_template(
-        'modal_fields_get_insumos_list.html',
+        'representante/modal_fields_get_insumos_list.html',
         insumos=filtered_insumos,
         user_signature=user_signature
     )
@@ -844,7 +844,7 @@ def edit_insumo(insumo_id):
             else:
                 vendor = filter_vendor(vendor_id=insumo.vendor_id)
                 vendors = Vendor.query.all()
-                return render_template('edit_insumos_admin.html',
+                return render_template('admin/edit_insumos_admin.html',
                                        insumo=insumo,
                                        insumo_number=insumo.id,
                                        vendors=vendors,
@@ -899,7 +899,7 @@ def edit_order(order_id):
                     error=False)
             else:
                 return render_template(
-                    'edit_order_admin.html',
+                    'admin/edit_order_admin.html',
                     order_id=order_id,
                     estimated_delivery_date=order.estimated_delivery_date.strftime("%Y-%m-%d"),
                     statuses=[status for status in OrderStatus],
@@ -924,7 +924,7 @@ def upload_signature():
         existent_signature = Signature.query.filter_by(user_email=user_email).first()
         if existent_signature:
             message = "El usuario ya tiene una firma agregada"
-            return render_template('signature_form.html',
+            return render_template('representante/signature_form.html',
                                    user_signature=existent_signature,
                                    message=message)
         else:
@@ -932,12 +932,12 @@ def upload_signature():
             db.session.add(signature)
             db.session.commit()
             message = "Firma agregada correctamente!"
-            return render_template('signature_form.html',
+            return render_template('representante/signature_form.html',
                                    user_signature=signature,
                                    message=message)
     except Exception as e:
         message = f"Ha ocurrido un error cargando la firma: Debes cargar una firma válida"
-    return render_template('signature_form.html',
+    return render_template('representante/signature_form.html',
                            message=message,
                            user_signature=None)
 
@@ -950,7 +950,7 @@ def generate_letter_for_order(
         representante_signature
 ):
     letter_html_rendered = render_template(
-        'letter_representante_generate_order.html',
+        'representante/letter_representante_generate_order.html',
         actual_date=date.today(),
         insumos_order=insumos_dict_list,
         medico_solicitante=medico_solicitante,
@@ -985,7 +985,7 @@ def generate_letter_response(
 
 ):
     letter_html_response_rendered = render_template(
-        'letter_response_admin.html',
+        'admin/letter_response_admin.html',
         order_id=order_id,
         actual_date=date.today(),
         medico_solicitante=medico_solicitante,
