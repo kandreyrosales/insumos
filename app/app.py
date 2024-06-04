@@ -314,7 +314,7 @@ def requires_admin_email():
         @wraps(func)
         def decorated_function(*args, **kwargs):
             if session.get('user_email') != ADMIN_EMAIL:
-                return redirect(url_for('logout'))
+                return redirect(url_for('representante'))
             return func(*args, **kwargs)
         return decorated_function
     return decorator
@@ -588,12 +588,14 @@ def insumos_representante_list():
 
 @app.route('/pedidos', methods=["GET"])
 @token_required
+@requires_admin_email()
 def pedidos():
     return render_template('orders_admin.html')
 
 
 @app.route('/api/orders_admin', methods=["GET"])
 @token_required
+@requires_admin_email()
 def orders_admin_list():
     with app.app_context():
         page = request.args.get('page', 1, type=int)
@@ -756,6 +758,7 @@ def show_pdf(order_id):
 
 @app.route('/edit_insumo/<int:insumo_id>', methods=["GET", "POST"])
 @token_required
+@requires_admin_email()
 def edit_insumo(insumo_id):
     """
     Editing an Insumo record based on its ID
