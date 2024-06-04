@@ -41,7 +41,7 @@ CONFIRM_ACCOUNT_CODE_URL = 'login/confirm_account_code.html'
 RESET_PASSWORD_URL = 'login/reset_password.html'
 SEND_RESET_PASSWORD_LINK = 'login/send_reset_password_link.html'
 
-ADMIN_EMAIL = 'admin@bayer.com'
+ADMIN_EMAIL = 'lilian.heredia@xaldigital.com'
 
 # boto3 clients
 cognito_client = boto3.client('cognito-idp',
@@ -212,7 +212,9 @@ def initial_data():
             "WETLIA,BARRERAS ESPINOZA EDNA GUADALUPE,GIAZX,CDA DE LOS ROMANCES,No 20,,PRIVADAS DEL CID,HERMOSILLO,SON,83107,662 4702948,edna.barreras@bayer.com",
             "WETLIA,ORONA RUIZ JOSE,GGKFI,PRIVADA COLINA DEL RIO,No 7653,91,RESIDENCIAL AGUA CALIENTE,TIJUANA,BCN,22194,664 2010578,jose.orona@bayer.com",
             "WETLIA,HERRERA LIMON MARIO,MEBPT,CALLE 12 PONIENTE,No 912,,LA LIBERTAD,PUEBLA,PUE,72130,222 3509687,mario.herrera@bayer.com",
-            "WETLIA,XALDIGITAL REPRESENTANTE TEST,MEBPZ,CALLE 12 PONIENTE,No 912,,LA LIBERTAD,PUEBLA,PUE,72130,222 3509687,kandreyrosales@gmail.com"
+            "WETLIA,XALDIGITAL REPRESENTANTE TEST,MEBPZ,CALLE 12 PONIENTE,No 912,,LA LIBERTAD,PUEBLA,PUE,72130,222 3509687,kandreyrosales@gmail.com",
+            "WETLIA,XALDIGITAL ADMIN TEST,ABCDE,CALLE 12 PONIENTE,No 912,,LA LIBERTAD,PUEBLA,PUE,72130,222 3509687,lilian.heredia@xaldigital.com",
+
         ]
         for entry in bayer_cwid_initial_data:
             fields = entry.split(',')
