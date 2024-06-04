@@ -41,6 +41,8 @@ CONFIRM_ACCOUNT_CODE_URL = 'login/confirm_account_code.html'
 RESET_PASSWORD_URL = 'login/reset_password.html'
 SEND_RESET_PASSWORD_LINK = 'login/send_reset_password_link.html'
 
+ADMIN_EMAIL = 'admin@bayer.com'
+
 # boto3 clients
 cognito_client = boto3.client('cognito-idp',
                               region_name=AWS_REGION,
@@ -307,6 +309,17 @@ def authenticate_user(username, password):
         return {"reason": "Error general. Por favor contactar al administrador"}
 
 
+def requires_admin_email():
+    def decorator(func):
+        @wraps(func)
+        def decorated_function(*args, **kwargs):
+            if session.get('user_email') != ADMIN_EMAIL:
+                return redirect(url_for('logout'))
+            return func(*args, **kwargs)
+        return decorated_function
+    return decorator
+
+
 @app.route('/login_representante', methods=['GET', 'POST'])
 def login_representante():
     """
@@ -506,6 +519,7 @@ def send_reset_password_link():
 
 @app.route('/admin', methods=["GET"])
 @token_required
+@requires_admin_email()
 def index_admin():
     return render_template('index_admin.html')
 
