@@ -54,8 +54,10 @@
 <div class="container">
     <div class="row">
         <div class="col">
-            Logo de Bayer
+            <img src="{{ logo_bayer }}" alt="Logo">
         </div>
+    </div>
+    <div class="row">
         <div class="col">
             Bayer de Mélaco, SA de E V ~ Miguel de Cervantes Saavedra 259, Col Granada Miguel Hidalgo, Ciudad de México, México.
         </div>
@@ -75,22 +77,22 @@
     <div class="row">
         <table>
             <thead>
-                <tr id="tr_table_insumos">
-                    <th>#</th>
-                    <th>Insumo</th>
-                    <th>Cantidad</th>
-                    <th>Costo</th>
-                </tr>
+            <tr id="tr_table_insumos">
+                <th>#</th>
+                <th>Insumo</th>
+                <th>Cantidad</th>
+                <th>Costo</th>
+            </tr>
             </thead>
             <tbody>
-                {% for insumo in insumos_order %}
+            {% for insumo in insumos_order %}
                 <tr>
                     <td>{{ loop.index }}</td>
                     <td>{{ insumo.name }}</td>
                     <td>{{ insumo.quantity }}</td>
                     <td>{{ insumo.cost }}</td>
                 </tr>
-                {% endfor %}
+            {% endfor %}
             </tbody>
         </table>
     </div>

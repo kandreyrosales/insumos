@@ -901,7 +901,7 @@ def edit_order(order_id):
                 return render_template(
                     'edit_order_admin.html',
                     order_id=order_id,
-                    estimated_delivery_date=order.estimated_delivery_date,
+                    estimated_delivery_date=order.estimated_delivery_date.strftime("%Y-%m-%d"),
                     statuses=[status for status in OrderStatus],
                     actual_status=order.status.value,
                     error=False
@@ -956,13 +956,23 @@ def generate_letter_for_order(
         medico_solicitante=medico_solicitante,
         posicion_medico=posicion_medico,
         nombre_institucion=nombre_institucion,
-        representante_signature=representante_signature
+        representante_signature=representante_signature,
+        logo_bayer=get_bayer_logo()
     )
     pdf = BytesIO()
     pisa_status = pisa.CreatePDF(BytesIO(letter_html_rendered.encode('utf-8')), dest=pdf)
     if pisa_status.err:
         raise ValueError(pisa_status.err)
     return pdf.getvalue()
+
+
+def get_bayer_logo():
+    image_path = os.path.join(app.root_path, 'static/assets/img/bayer_logo.png')
+    # Read the image file and encode it in base64
+    with open(image_path, 'rb') as image_file:
+        encoded_image = base64.b64encode(image_file.read()).decode('utf-8')
+    image_data = f'data:image/png;base64,{encoded_image}'
+    return image_data
 
 
 def generate_letter_response(
@@ -982,7 +992,8 @@ def generate_letter_response(
         posicion_medico=posicion_medico,
         nombre_institucion=nombre_institucion,
         representante_signature=representante_signature,
-        nombre_representante=nombre_representante
+        nombre_representante=nombre_representante,
+        logo_bayer=get_bayer_logo()
     )
     pdf = BytesIO()
     pisa_status = pisa.CreatePDF(BytesIO(letter_html_response_rendered.encode('utf-8')), dest=pdf)
