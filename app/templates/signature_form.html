@@ -1,8 +1,10 @@
+{% if message %}
 <div class="col">
-    <div class="mb-3">
-        <span>{{ message }}</span>
+        <div class="mb-3">
+            <span>{{ message }}</span>
+        </div>
     </div>
-</div>
+{% endif %}
 {% if not user_signature %}
     <form id='upload_signature_form'>
         <label for="file" class="col-form-label insumos_form_label">Carga tu firma para la carta aquí:</label>

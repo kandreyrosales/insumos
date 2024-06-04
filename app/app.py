@@ -677,10 +677,15 @@ def generate_insumos_list_html():
     filtered_insumos = Insumo.query.filter(Insumo.id.in_(insumos_ids)).all()
     user_email = "kandreyrosales@gmail.com"
     user_signature = Signature.query.filter_by(user_email=user_email).first()
+
+    signature_form_rendered = render_template('signature_form.html',
+                                              user_signature=user_signature,
+                                              message=None)
     return render_template(
         'modal_fields_get_insumos_list.html',
         insumos=filtered_insumos,
-        user_signature=user_signature
+        user_signature=user_signature,
+        signature_form_rendered=signature_form_rendered,
     )
 
 
