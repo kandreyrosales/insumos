@@ -1,0 +1,82 @@
+<html lang="es">
+<head>
+    <link href="{{ url_for('static', filename='assets/css/bootstrap.css') }}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', filename='assets/css/index.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <title>Insumos App</title>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <div class="navbar-brand">
+                <button class="btn btn-light btn-lg border-0"  style="background-color: transparent;color: white;font-size: 35px" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
+                    <i class="bi bi-list"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</nav>
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel" style="width: 263px">
+    <div class="offcanvas-header">
+        <div style="text-align:center">
+            <img src="{{ url_for('static', filename='assets/img/bayer_logo.png') }}" width="76px" height="76px" alt="Logo Bayer" class="logo">
+        </div>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close">
+            <img src="{{ url_for('static', filename='assets/img/leftsidebaricon.png') }}" width="24px" height="24px" alt="left sidebar icon">
+        </button>
+    </div>
+    <div class="offcanvas-body" style="padding-top: 0">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a href="{{ url_for('index_admin') }}" class="btn btn-lg border-0 custom_btn_navbar custom_btn_navbar_resumen" id="btn-executive-page">
+                    <svg id="icon_resumen_ejecutivo" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="24" height="24" fill="none"/>
+                        <rect class="rect_resumen_icon" x="2" y="6" width="20" height="16" rx="5" stroke="#231F20" stroke-width="1.5"/>
+                        <path class="rect_resumen_icon" d="M19 6.5V6.5C19 4.17692 16.8678 2.43898 14.5924 2.90744L5.99174 4.67817C3.66769 5.15665 2 7.20267 2 9.57546L2 13" stroke="#231F20" stroke-width="1.5"/>
+                        <path class="rect_resumen_icon" d="M6 17.5H12" stroke="#231F20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path class="rect_resumen_icon" d="M15 14C15 12.6193 16.1193 11.5 17.5 11.5H22V16.5H17.5C16.1193 16.5 15 15.3807 15 14V14Z" stroke="#231F20" stroke-width="1.5"/>
+                        <path class="rect_resumen_icon" d="M17.5 14H17.7" stroke="#231F20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Insumos</span>
+                </a>
+            </li>
+            <li class="nav-item"><a href="{{ url_for('pedidos') }}" class="btn btn-lg border-0 custom_btn_navbar custom_btn_navbar_conciliaciones" id="btn-conciliations-page">
+                <svg id="icon_conciliaciones" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect class="rect_conciliaciones_icon" x="2" y="2" width="20" height="20" rx="5" stroke="#231F20" stroke-width="1.5"/>
+                    <path class="rect_conciliaciones_icon" d="M8 17L8 14" stroke="#231F20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path class="rect_conciliaciones_icon" d="M12 17L12 7" stroke="#231F20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path class="rect_conciliaciones_icon" d="M16 17L16 10" stroke="#231F20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Pedidos
+            </a>
+            </li>
+        </ul>
+    </div>
+    <div class="offcanvas-footer">
+        <ul class="navbar-nav">
+            <li class="nav-item" style="margin-left: 10px;margin-bottom: 10px">
+                <a href="{{ url_for('logout') }}" class="btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 16V18C16 20.2091 14.2091 22 12 22H7C4.79086 22 3 20.2091 3 18V6C3 3.79086 4.79086 2 7 2H12C14.2091 2 16 3.79086 16 6V8" stroke="#2B3F6C" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M19 15L21.2929 12.7071C21.6834 12.3166 21.6834 11.6834 21.2929 11.2929L19 9" stroke="#2B3F6C" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M21 12L9 12" stroke="#2B3F6C" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    Cerrar Sesión
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="container-fluid" style="background-color: #F9F9F9">
+    {% block content %}{% endblock %}
+</div>
+</body>
+<script src="{{ url_for('static', filename='assets/js/bootstrap.bundle.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/htmx.min.js') }}"></script>
+{% block extrajs %}
+{% endblock %}
+

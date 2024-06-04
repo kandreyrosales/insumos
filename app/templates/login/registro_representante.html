@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>Insumos</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+
+    <!-- Favicons -->
+    <link href="assets/img/favicon.png" rel="icon">
+    <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Vendor CSS Files -->
+    <link href="{{ url_for('static', filename='assets/css/bootstrap.css') }}" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    <!-- Template Main CSS File -->
+    <link href="{{ url_for('static', filename='assets/css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+<div class="container-fluid" id="container-registro-representante">
+    <!-- Page Content  -->
+    <div class="row justify-content-center">
+        <div class="col-md-7 mt-4 mb-4" >
+            <div class="card" id="fixed-card-registro-representante">
+                <div class="card-body" id="card-body-registro-representante">
+                    <div style="margin-bottom: 20px;margin-top:20px;text-align:center">
+                        <img src="{{ url_for('static', filename='assets/img/bayer_logo.png') }}" alt="Logo Bayer" class="logo">
+                    </div>
+                    <div>
+                        <p id="title_login">Registro Representante</p>
+                    </div>
+                    <div>
+                        {% if error %}
+                        <p style="color: red;">{{ error }}</p>
+                        {% endif %}
+                        <form method="POST" action="{{ url_for('registro_representante') }}">
+                            <div id="form_divs_response">
+                                <div class="row mb-2">
+                                <div class="form-group col-2">
+                                    <label for="cwid_custom_id" class="form_text_login_signup">CWID</label>
+                                    <input type="text" class="form-control login_signup_input" id="cwid_custom_id" name="cwid_custom_id" hx-get="{{ url_for('autocomplete') }}" hx-trigger="keyup changed delay:500ms" hx-target="#form_divs_response" hx-swap="outerHTML" required>
+                                </div>
+                                <div class="form-group col">
+                                    <label for="username" class="form_text_login_signup">Correo</label>
+                                    <input type="email" class="form-control login_signup_input" id="username" name="username">
+                                </div>
+                                <div class="form-group col">
+                                    <label for="fullname" class="form_text_login_signup">Nombre</label>
+                                    <input type="text" class="form-control login_signup_input" id="fullname" name="fullname">
+                                </div>
+                            </div>
+                                <div class="row mb-2">
+                                    <div class="form-group col">
+                                        <label for="password" class="form_text_login_signup">Contraseña</label>
+                                        <input type="password" class="form-control login_signup_input" id="password" name="password" required>
+                                    </div>
+                                    <div class="form-group col">
+                                        <label for="confirm_password" class="form_text_login_signup">Confirmar Contraseña</label>
+                                        <input type="password" class="form-control login_signup_input" id="confirm_password" name="confirm_password" required>
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="form-group col-3">
+                                        <label for="customer_team_input" class="form_text_login_signup">Customer Team</label>
+                                        <input type="text" class="form-control login_signup_input" id="customer_team_input" name="customer_team_input">
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <label for="delivery_address" class="form_text_login_signup">Dirección de Entrega</label>
+                                        <input type="text" class="form-control login_signup_input" id="delivery_address" name="delivery_address">
+                                    </div>
+                                    <div class="form-group col">
+                                        <label for="city" class="form_text_login_signup">Ciudad</label>
+                                        <input type="text" class="form-control login_signup_input" id="city" name="city">
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="form-group col">
+                                        <label for="colonia" class="form_text_login_signup">Colonia</label>
+                                        <input type="text" class="form-control login_signup_input" id="colonia" name="colonia">
+                                    </div>
+                                    <div class="form-group col">
+                                        <label for="ext_number" class="form_text_login_signup">Número Ext</label>
+                                        <input type="text" class="form-control login_signup_input" id="ext_number" name="ext_number">
+                                    </div>
+                                    <div class="form-group col">
+                                        <label for="int_number" class="form_text_login_signup">Número Interior</label>
+                                        <input type="text" class="form-control login_signup_input" id="int_number" name="int_number">
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="form-group col">
+                                        <label for="edo" class="form_text_login_signup">EDO</label>
+                                        <input type="text" class="form-control login_signup_input" id="edo" name="edo">
+                                    </div>
+                                    <div class="form-group col">
+                                        <label for="cp" class="form_text_login_signup">C.P.</label>
+                                        <input type="text" class="form-control login_signup_input" id="cp" name="cp">
+                                    </div>
+                                    <div class="form-group col">
+                                        <label for="telephone_bayer" class="form_text_login_signup">Cel Bayer/Laboral</label>
+                                        <input type="text" class="form-control login_signup_input" id="telephone_bayer" name="telephone_bayer">
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div style="text-align:center">
+                                <button type="submit" class="btn btn-primary button_login_signup">INICIAR SESIÓN</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='assets/js/htmx.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/bootstrap.bundle.js') }}"></script>
+</body>
+</html>

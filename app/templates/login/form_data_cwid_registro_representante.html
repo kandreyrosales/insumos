@@ -1,0 +1,68 @@
+<div id="form_divs_response">
+    <div class="row mb-2">
+        <div class="form-group col-2">
+            <label for="cwid_custom_id" class="form_text_login_signup">CWID</label>
+            <input type="text" class="form-control login_signup_input" id="cwid_custom_id" name="cwid_custom_id" hx-get="{{ url_for('autocomplete') }}" hx-trigger="keyup changed delay:500ms" hx-target="#form_divs_response" hx-swap="outerHTML" value="{{ cwid_custom_id }}" required>
+        </div>
+        <div class="form-group col">
+            <label for="username" class="form_text_login_signup">Correo</label>
+            <input type="email" class="form-control login_signup_input" id="username" name="username" value="{{ username }}" readonly>
+        </div>
+        <div class="form-group col">
+            <label for="fullname" class="form_text_login_signup">Nombre</label>
+            <input type="text" class="form-control login_signup_input" id="fullname" name="fullname" value="{{ fullname }}" readonly>
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="form-group col">
+            <label for="password" class="form_text_login_signup">Contraseña</label>
+            <input type="password" class="form-control login_signup_input" id="password" name="password" required>
+        </div>
+        <div class="form-group col">
+            <label for="confirm_password" class="form_text_login_signup">Confirmar Contraseña</label>
+            <input type="password" class="form-control login_signup_input" id="confirm_password" name="confirm_password" required>
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="form-group col-3">
+            <label for="customer_team_input" class="form_text_login_signup">Customer Team</label>
+            <input type="text" class="form-control login_signup_input" id="customer_team_input" name="customer_team_input" value="{{ customer_team_input }}" readonly>
+        </div>
+        <div class="form-group col-6">
+            <label for="delivery_address" class="form_text_login_signup">Dirección de Entrega</label>
+            <input type="text" class="form-control login_signup_input" id="delivery_address" name="delivery_address" value="{{ delivery_address }}" readonly>
+        </div>
+        <div class="form-group col">
+            <label for="city" class="form_text_login_signup">Ciudad</label>
+            <input type="text" class="form-control login_signup_input" id="city" name="city" value="{{ city }}" readonly>
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="form-group col">
+            <label for="colonia" class="form_text_login_signup">Colonia</label>
+            <input type="text" class="form-control login_signup_input" id="colonia" name="colonia" value="{{ colonia }}" readonly>
+        </div>
+        <div class="form-group col">
+            <label for="ext_number" class="form_text_login_signup">Número Ext</label>
+            <input type="text" class="form-control login_signup_input" id="ext_number" name="ext_number" value="{{ ext_number }}" readonly>
+        </div>
+        <div class="form-group col">
+            <label for="int_number" class="form_text_login_signup">Número Interior</label>
+            <input type="text" class="form-control login_signup_input" id="int_number" name="int_number" value="{{ int_number }}" readonly>
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="form-group col">
+            <label for="edo" class="form_text_login_signup">EDO</label>
+            <input type="text" class="form-control login_signup_input" id="edo" name="edo" value="{{ edo }}" readonly>
+        </div>
+        <div class="form-group col">
+            <label for="cp" class="form_text_login_signup">C.P.</label>
+            <input type="text" class="form-control login_signup_input" id="cp" name="cp" value="{{ cp }}" readonly>
+        </div>
+        <div class="form-group col">
+            <label for="telephone_bayer" class="form_text_login_signup">Cel Bayer/Laboral</label>
+            <input type="text" class="form-control login_signup_input" id="telephone_bayer" name="telephone_bayer" value="{{ telephone_bayer }}" readonly>
+        </div>
+    </div>
+</div>

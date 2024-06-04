@@ -1,0 +1,5 @@
+/app/utils/variables.tf
+/app/utils/.terraform
+.idea
+*.pyc
+venv

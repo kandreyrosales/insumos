@@ -1,0 +1,299 @@
+@import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+.navbar{
+    background-color: #0075A6   ;
+}
+
+.nav-item {
+    margin-top: 10px; /* Adjust as needed */
+}
+
+.custom_btn_navbar, #btn-logout{
+    width: 100%;
+    padding: 20px;
+    text-align: left;
+    font-family: Poppins;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.custom_btn_navbar_resumen:hover{
+    background-color: #0075A6;
+    color: #FFFFFF;
+    transition: .3s ease;
+    .rect_resumen_icon{
+        stroke: white;
+    };
+}
+
+.custom_btn_navbar_conciliaciones:hover{
+    background-color: #0075A6;
+    color: #FFFFFF;
+    transition: .3s ease;
+    .rect_conciliaciones_icon{
+        stroke: white;
+    };
+}
+
+.validador_table_button_headers, .validador_table_button_headers:hover{
+    background: #165CA4;
+    font-family: Inter;
+    font-size: 14px;
+    font-weight: 500;
+    color: #FFFFFF;
+}
+
+.validador_ieps_table_button_headers, .validador_ieps_table_button_headers:hover{
+    background-color: #0BBEF0;
+    font-family: Inter;
+    font-size: 14px;
+    font-weight: 500;
+    color: #FFFFFF;
+}
+
+
+.card-title{
+    font-family: Poppins;
+    font-size: 24px;
+    font-weight: 600;
+    margin-left: 10px;
+}
+
+.second_value_card{
+    font-family: Poppins;
+    font-size: 32px;
+    font-weight: 600;
+    margin-left: 10px;
+}
+
+.date_card_value{
+    font-family: Inter;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.percentage_card_value{
+    font-family: Inter;
+    font-size: 32px;
+    font-weight: 600;
+    margin-left: 10px;
+}
+
+.transactions_card_value, .versus_card_value{
+    font-family: Inter;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.tr_style_validador_iva_table td{
+    font-family: Inter;
+    font-size: 14px;
+    font-weight: 700;
+    color: #727272;
+    text-align: center;
+}
+
+.tr_bancos_table td{
+    font-family: Inter;
+    font-size: 14px;
+    font-weight: 700;
+    color: #727272;
+    text-align: center;
+}
+
+.tr_style_validador_ieps_table td{
+    font-family: Inter;
+    font-size: 14px;
+    font-weight: 700;
+    color: #727272;
+    text-align: center;
+}
+
+.custom_icon_rectangle {
+    width: 42px; /* Width of the rectangle */
+    height: 42px; /* Height of the rectangle */
+    background-color: #CFD9F1; /* Background color */
+    border-radius: 10px;
+    display: flex; /* Use flexbox */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+}
+
+#more_info_ingresos{
+    font-family: Poppins;
+    font-size: 14px;
+    font-weight: 400;
+    color: #000000;
+}
+
+
+.tr_style_validador_iva_table, .tr_style_validador_ieps_table{
+    text-align: center;
+}
+
+.filter_label{
+    font-family: Poppins;
+    font-size: 18px;
+    font-weight: 600;
+    text-align: left;
+    color: #FFFFFF;
+}
+
+#calendar_filter {
+    border: 1px solid #FFFFFF;
+    border-radius: 4px;
+    font-family: Poppins;
+    box-shadow: inset 0 3px 6px rgba(0,0,0,0.1);
+}
+
+#cfo_reconciliations .titles_table th{
+    background-color: #0F7093;
+    font-family: Poppins;
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+    color: #FFFFFF;
+    padding: 10px 80px;
+    border-color: white;
+}
+
+.tr_style_reconciliations_table td{
+    text-align: center;
+}
+
+.title_group_cfo_table{
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+    color: #FFFFFF;
+    border: 10px solid white;
+}
+
+td, th {
+    white-space: nowrap;
+    text-align: center;
+}
+
+#calendar_filter_start_date, #calendar_filter_end_date, #calendar_filter_value_date_end_date, #calendar_filter_value_date_start_date{
+    width: 150px;
+    height: 32px;
+    border-radius: 10px;
+    padding: 5px;
+    border-color: transparent;
+}
+
+.select2-selection__rendered {
+    line-height: 32px !important;
+}
+.select2-container .select2-selection--single, .select2-container--default.select2-container--open{
+    height: 32px !important;
+
+}
+.select2-selection__arrow {
+    height: 32px !important;
+}
+
+.btn-close{
+    --bs-btn-close-bg:'';
+    opacity: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;  border: none;
+}
+
+
+.svg-container{
+    display: flex;
+    align-items: center;  /* Centers content vertically */
+    justify-content: center;  /* Centers content horizontally */
+}
+
+.chart-container {
+    width: 350px; /* Default width for larger screens */
+}
+
+@media (max-width: 768px) {
+    .chart-container {
+        width: 350px; /* Adjust width for smaller screens */
+    }
+}
+
+@media (max-width: 480px) {
+    .chart-container {
+        width: 100%; /* Set to 100% for very small screens */
+    }
+}
+
+#insumos_title{
+    font-family: Poppins;
+    font-size: 36px;
+    font-weight: 700;
+    text-align: left;
+    color: #0075A6;
+    margin-top: 10px;
+}
+
+#table_container_index{
+    background-color: #FFFFFF;
+    padding: 20px;
+}
+
+#main_row{
+    padding: 20px;
+    width: 100%;
+}
+
+#add_insumos_svg:hover #rect_add_insumos{
+    fill: #FF3162;
+    transition: all 0.4s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+    -webkit-transition: all 0.4s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+    -moz-transition: all 0.4s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+    -o-transition: all 0.4s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+}
+
+#add_insumos_svg #rect_add_insumos{
+    transition: all 0.2s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+}
+
+#tr_table_insumos th{
+    font-family: Poppins;
+    font-size: 24px;
+    font-weight: 600;
+    text-align: center;
+    color: #FFFFFF;
+    background-color: #00BCFF;
+}
+
+#tr_table_orders th{
+    font-family: Poppins;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    color: #272833;
+}
+
+.modal-add-insumos-title{
+    font-family: Poppins;
+    font-size: 36px;
+    font-weight: 500;
+}
+
+.insumos_form_label{
+    font-family: Poppins;
+    font-size: 14px;
+    font-weight: 400;
+    text-align: left;
+}
+
+.placeholder_label_insumos{
+    font-family: Poppins;
+    font-size: 16px;
+    font-weight: 300;
+    text-align: left;
+}
+
+.alert {
+    font-size: 0.8rem; /* Adjust font size as needed */
+    padding: 0.25rem 1rem; /* Adjust padding as needed */
+}
+

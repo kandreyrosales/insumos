@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Solicitud de Insumos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            width: 100%;
+            margin: 0 auto;
+        }
+        .row {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .col {
+            display: inline-block;
+            vertical-align: top;
+        }
+        .col:first-child {
+            width: 20%;
+        }
+        .col:last-child {
+            width: 75%;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        #tr_table_insumos th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        img {
+            max-width: 100px;
+            max-height: 100px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            Logo de Bayer
+        </div>
+        <div class="col">
+            Bayer de Mélaco, SA de E V ~ Miguel de Cervantes Saavedra 259, Col Granada Miguel Hidalgo, Ciudad de México, México.
+        </div>
+    </div>
+    <div class="row">
+        Fecha: {{ actual_date }}
+    </div>
+    <div class="row">
+        Asunto: Solicitud de insumos
+    </div>
+
+    <div class="row">
+        Por medio de la presente solicito el apoyo descrito a continuación (favor de colocar tipo de insumo y cantidad), con
+        el fin de que puedan utilizarse en los servicios médicos de la institución en beneficio directo de los pacientes.
+    </div>
+
+    <div class="row">
+        <table>
+            <thead>
+                <tr id="tr_table_insumos">
+                    <th>#</th>
+                    <th>Insumo</th>
+                    <th>Cantidad</th>
+                    <th>Costo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for insumo in insumos_order %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ insumo.name }}</td>
+                    <td>{{ insumo.quantity }}</td>
+                    <td>{{ insumo.cost }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row">
+        Agradeciendo la atención al presente, <br>
+        Nombre de solicitante: {{ medico_solicitante }} <br>
+        Posición: {{ posicion_medico }} <br>
+        Nombre de la Institución: {{ nombre_institucion }} <br>
+    </div>
+    <div class="row">
+        <img src="data:image/png;base64,{{ representante_signature }}">
+    </div>
+
+</div>
+
+</body>
+</html>
