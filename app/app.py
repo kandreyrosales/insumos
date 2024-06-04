@@ -504,7 +504,7 @@ def send_reset_password_link():
 
 
 @app.route('/admin', methods=["GET"])
-# @token_required
+@token_required
 def index_admin():
     try:
         cognito_client.get_user(AccessToken=session.get("access_token"))
@@ -521,10 +521,11 @@ def add_insumos_form():
 
 
 @app.route('/representante', methods=["GET"])
-# @token_required
+@token_required
 def representante():
     try:
-        cognito_client.get_user(AccessToken=session.get("access_token"))
+        user = cognito_client.get_user(AccessToken=session.get("access_token"))
+        print(user, "test")
     except cognito_client.exceptions.UserNotFoundException as e:
         return redirect(url_for('logout'))
     return render_template('representante_index.html')
@@ -538,6 +539,7 @@ def get_image(signature_id):
         mimetype='image/jpeg',
         as_attachment=False
     )
+
 
 @app.route('/getvendorlist', methods=["GET"])
 def getvendorlist():
@@ -574,7 +576,7 @@ def insumos_representante_list():
 
 
 @app.route('/pedidos', methods=["GET"])
-# @token_required
+@token_required
 def pedidos():
     try:
         cognito_client.get_user(AccessToken=session.get("access_token"))
