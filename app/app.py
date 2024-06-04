@@ -862,7 +862,7 @@ def upload_signature():
         if existent_signature:
             message = "El usuario ya tiene una firma agregada"
             return render_template('signature_form.html',
-                                   signature_user=existent_signature,
+                                   user_signature=existent_signature,
                                    message=message)
         else:
             signature = Signature(user_email=user_email, signature_image=file.read())
@@ -870,13 +870,13 @@ def upload_signature():
             db.session.commit()
             message = "Firma agregada correctamente!"
             return render_template('signature_form.html',
-                                   signature_user=signature,
+                                   user_signature=signature,
                                    message=message)
     except Exception as e:
         message = f"Ha ocurrido un error cargando la firma: Debes cargar una firma válida"
     return render_template('signature_form.html',
                            message=message,
-                           signature_user=None)
+                           user_signature=None)
 
 
 def generate_letter_for_order(
