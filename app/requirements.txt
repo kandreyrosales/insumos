@@ -6,5 +6,6 @@ openpyxl
 psycopg2-binary
 Flask-SQLAlchemy
 xhtml2pdf
+pyopenssl==24.0.0
 
 
