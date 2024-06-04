@@ -726,11 +726,7 @@ def add_order_record():
     Adding an Order record to the datatabase
     """
     # Counter of quantity_insumo
-    try:
-        cognito_client.get_user(AccessToken=session.get("access_token"))
-    except cognito_client.exceptions.UserNotFoundException as e:
-        return redirect(url_for('logout'))
-    user_email = "kandreyrosales@gmail.com"
+    user_email = session.get("user_email")
     medico_solicitante = request.form.get('medico_solicitante')
     posicion_medico = request.form.get('posicion_medico')
     nombre_institucion = request.form.get('nombre_institucion')
@@ -763,6 +759,7 @@ def add_order_record():
                 )
 
             signature = Signature.query.filter_by(user_email=user_email).first()
+            print(signature, "Test Kevin Signature Data")
             representante_signature = base64.b64encode(signature.signature_image).decode('utf-8')
 
             pdf_data = generate_letter_for_order(
