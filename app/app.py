@@ -870,8 +870,8 @@ def upload_signature():
             db.session.commit()
             message = "Firma cargada de forma exitosa"
     except Exception as e:
-        message = f"Ha ocurrido un error cargando la firma: {e}"
-    return render_template('response_signature.html', message=message)
+        message = f"Ha ocurrido un error cargando la firma: Debes cargar una firma válida"
+    return render_template('signature_form.html', message=message)
 
 
 def generate_letter_for_order(
