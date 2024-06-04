@@ -630,7 +630,7 @@ def orders_admin_list():
                 "customer_team": bayer_user.customer_team,
                 "total": order.total,
                 "fecha_pedido": order.creation_date,
-                "fecha_entrega": order.estimated_delivery_date if order.estimated_delivery_date else "",
+                "fecha_entrega": datetime.strftime(order.estimated_delivery_date, "%d-%m-%Y") if order.estimated_delivery_date else "",
                 "estado": order.status.value,
                 "carta_representante": url_for("show_pdf", order_id=order.id),
                 "carta_respuesta": url_for("show_pdf_response_letter", order_id=order.id) if order.letter_response else '',
