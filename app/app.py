@@ -595,7 +595,7 @@ def pedidos():
 
 @app.route('/pedidos_representante', methods=["GET"])
 @token_required
-def pedidos():
+def pedidos_representante():
     return render_template('orders_representante.html',
                            user_admin=False)
 
