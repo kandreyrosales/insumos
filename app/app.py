@@ -434,7 +434,7 @@ def confirm_account_code():
 def logout():
     # Clear the session data
     session.clear()
-    return redirect(url_for('login'))
+    return redirect(url_for('login_representante'))
 
 
 def token_required(f):
