@@ -809,7 +809,7 @@ def show_pdf_response_letter(order_id):
     order = Order.query.get_or_404(order_id)
     response = make_response(order.letter_response)
     response.headers['Content-Type'] = 'application/pdf'
-    response.headers['Content-Disposition'] = f'inline; filename=respuesta_carta_insumo_order__{order_id}.pdf'
+    response.headers['Content-Disposition'] = f'inline; filename=respuesta_carta_insumo_order_{order_id}.pdf'
     return response
 
 
