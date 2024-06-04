@@ -234,6 +234,10 @@ def initial_data():
 
 @app.route('/autocomplete')
 def autocomplete():
+    """
+    Function to get all the data of representante based on CWID field
+    :return:
+    """
     cwid = request.args.get('cwid_custom_id', '')
     bayer_user = BayerUser.query.filter_by(cwid=cwid).first()
     if bayer_user:
@@ -268,18 +272,6 @@ def autocomplete():
             cp="",
             telephone_bayer=""
         )
-
-
-def connect_and_execute(query):
-    try:
-        # Connect to the database
-        with app.app_context():
-            result = db.session.execute(query)
-            db.session.commit()  # Commit changes to the database
-            return result
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
 
 
 def authenticate_user(username, password):
@@ -343,7 +335,16 @@ def login_representante():
 
         session['access_token'] = auth_result.get('AccessToken')
         session['id_token'] = auth_result.get('IdToken')
-        return redirect(url_for('index'))
+        session['user_email'] = username
+        with app.app_context():
+            if username == "admin@bayer.com":
+                return redirect(url_for('index_admin'))
+            elif BayerUser.query.filter_by(email=username).first():
+                return redirect(url_for('representante'))
+            else:
+                return redirect(url_for('logout'))
+
+
     else:
         return render_template(
             LOGIN_URL_REPRESENTATE,
@@ -506,14 +507,11 @@ def send_reset_password_link():
 @app.route('/admin', methods=["GET"])
 @token_required
 def index_admin():
-    try:
-        cognito_client.get_user(AccessToken=session.get("access_token"))
-    except cognito_client.exceptions.UserNotFoundException as e:
-        return redirect(url_for('logout'))
     return render_template('index_admin.html')
 
 
 @app.route('/add_insumos_form', methods=["GET"])
+@token_required
 def add_insumos_form():
     vendors = Vendor.query.all()
     return render_template("add_insumos_form.html",
@@ -523,15 +521,11 @@ def add_insumos_form():
 @app.route('/representante', methods=["GET"])
 @token_required
 def representante():
-    try:
-        user = cognito_client.get_user(AccessToken=session.get("access_token"))
-        print(user, "test")
-    except cognito_client.exceptions.UserNotFoundException as e:
-        return redirect(url_for('logout'))
     return render_template('representante_index.html')
 
 
 @app.route('/image/<int:signature_id>')
+@token_required
 def get_image(signature_id):
     signature = Signature.query.get_or_404(signature_id)
     return send_file(
@@ -542,6 +536,7 @@ def get_image(signature_id):
 
 
 @app.route('/getvendorlist', methods=["GET"])
+@token_required
 def getvendorlist():
     with app.app_context():
         vendors = Vendor.query.all()
@@ -552,6 +547,7 @@ def getvendorlist():
 
 
 @app.route('/api/vendors', methods=["GET"])
+@token_required
 def insumos_list():
     with app.app_context():
         page = request.args.get('page', 1, type=int)
@@ -564,6 +560,7 @@ def insumos_list():
 
 
 @app.route('/api/insumos_representante', methods=["GET"])
+@token_required
 def insumos_representante_list():
     with app.app_context():
         page = request.args.get('page', 1, type=int)
@@ -578,14 +575,11 @@ def insumos_representante_list():
 @app.route('/pedidos', methods=["GET"])
 @token_required
 def pedidos():
-    try:
-        cognito_client.get_user(AccessToken=session.get("access_token"))
-    except cognito_client.exceptions.UserNotFoundException as e:
-        return redirect(url_for('logout'))
     return render_template('orders_admin.html')
 
 
 @app.route('/api/orders_admin', methods=["GET"])
+@token_required
 def orders_admin_list():
     with app.app_context():
         page = request.args.get('page', 1, type=int)
@@ -613,6 +607,7 @@ def orders_admin_list():
 
 
 @app.route('/api/generate_insumos_list_html', methods=["GET"])
+@token_required
 def generate_insumos_list_html():
     lista_insumos_id_raw = request.args.get('insumos_id_list')
     insumos_ids = [int(insumo_id) for insumo_id in json.loads(lista_insumos_id_raw)]
@@ -635,6 +630,7 @@ def filter_vendor(vendor_id: int):
 
 
 @app.route('/add_insumos_records', methods=["POST"])
+@token_required
 def add_insumos_records():
     """
     Adding an Insumo record to the datatabase
@@ -660,6 +656,7 @@ def add_insumos_records():
 
 
 @app.route('/add_order_record', methods=["POST"])
+@token_required
 def add_order_record():
 
     """
@@ -734,6 +731,7 @@ def add_order_record():
 
 
 @app.route('/show_pdf/<int:order_id>')
+@token_required
 def show_pdf(order_id):
     order = Order.query.get_or_404(order_id)
     response = make_response(order.letter)
@@ -743,6 +741,7 @@ def show_pdf(order_id):
 
 
 @app.route('/edit_insumo/<int:insumo_id>', methods=["GET", "POST"])
+@token_required
 def edit_insumo(insumo_id):
     """
     Editing an Insumo record based on its ID
@@ -783,15 +782,11 @@ def edit_insumo(insumo_id):
 
 # Route to upload a file
 @app.route('/upload_signature', methods=['POST'])
+@token_required
 def upload_signature():
-    # try:
-    #     cognito_client.get_user(AccessToken=session.get("access_token"))
-    # except cognito_client.exceptions.UserNotFoundException as e:
-    #     return redirect(url_for('logout'))
+    user_email = session.get("user_email")
     try:
         file = request.files['file']
-        # email of actual user logged in
-        user_email = "kandreyrosales@gmail.com"
         existent_signature = Signature.query.filter_by(user_email=user_email).first()
         if existent_signature:
             message = "El usuario ya tiene una firma agregada"
@@ -827,30 +822,6 @@ def generate_letter_for_order(
     if pisa_status.err:
         raise ValueError(pisa_status.err)
     return pdf.getvalue()
-
-#
-#
-# @app.route('/delete_insumo/<int:insumo_id>', methods=["DELETE"])
-# def delete_insumo(insumo_id):
-#     """
-#     Deleting an Insumo record based on its ID
-#     """
-#     conn, cur = connection_db()
-#     try:
-#         # Check if insumo exists
-#         cur.execute(f"SELECT * FROM insumos WHERE id = {insumo_id}")
-#         insumo = cur.fetchone()
-#
-#         if not insumo:
-#             return jsonify({'error': 'Insumo not found'}), 404
-#
-#         # Delete insumo record
-#         delete_query = f"DELETE FROM insumos WHERE id = {insumo_id}"
-#         execute_query(cur=cur, conn=conn, query=delete_query)
-#         return jsonify({'message': 'Insumo deleted successfully!'}), 200
-#
-#     except Exception as e:
-#         return jsonify({'error': str(e)}), 500
 
 
 
