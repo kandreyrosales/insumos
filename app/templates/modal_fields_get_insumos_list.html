@@ -1,5 +1,5 @@
 <div id="order_creation_response"></div>
-<form id="external_form_create_order" hx-post="{{ url_for('add_order_record') }}" hx-target="#order_creation_response" hx-trigger="submit">
+<form id="external_form_create_order">
     <div class="row">
         <div class="col">
             <div class="mb-3">
@@ -68,7 +68,7 @@
     </div>
 
 
-    <button class="btn" type="submit">
+    <button class="btn" hx-post="{{ url_for('add_order_record') }}" hx-target="#order_creation_response" hx-trigger="click" hx-swap="innerHTML">
         <svg width="418" height="50" viewBox="0 0 418 50" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g clip-path="url(#clip0_1_1310)">
                 <rect width="418" height="50" fill="#0075A6"/>
