@@ -521,7 +521,7 @@ def send_reset_password_link():
 @token_required
 @requires_admin_email()
 def index_admin():
-    return render_template('index_admin.html')
+    return render_template('index_admin.html', admin_user=True)
 
 
 @app.route('/add_insumos_form', methods=["GET"])
@@ -535,7 +535,7 @@ def add_insumos_form():
 @app.route('/representante', methods=["GET"])
 @token_required
 def representante():
-    return render_template('representante_index.html')
+    return render_template('representante_index.html', admin_user=False)
 
 
 @app.route('/image/<int:signature_id>')
@@ -593,6 +593,13 @@ def pedidos():
     return render_template('orders_admin.html')
 
 
+@app.route('/pedidos_representante', methods=["GET"])
+@token_required
+def pedidos():
+    return render_template('orders_representante.html',
+                           user_admin=False)
+
+
 @app.route('/api/orders_admin', methods=["GET"])
 @token_required
 @requires_admin_email()
@@ -619,6 +626,40 @@ def orders_admin_list():
             })
         return render_template('orders_table.html',
                                orders=new_dict_orders_list,
+                               pagination=pagination)
+
+
+@app.route('/api/orders_representante', methods=["GET"])
+@token_required
+def orders_representante_list():
+    email = session.get("user_email")
+    with app.app_context():
+        page = request.args.get('page', 1, type=int)
+        per_page = 10  # Number of records per page
+        pagination = Order.query.paginate(page=page,
+                                          per_page=per_page,
+                                          max_per_page=10,
+                                          count=True,
+                                          error_out=False,
+                                          user_email=email)
+        orders = pagination.items
+        new_dict_orders_list_representante = []
+        bayer_user = BayerUser.query.filter_by(email=email).first()
+        for order in orders:
+            new_dict_orders_list_representante.append({
+                "id": order.id,
+                "representante": bayer_user.name,
+                "institucion_entrega": order.delivery_institute,
+                "customer_team": bayer_user.customer_team,
+                "total": order.total,
+                "fecha_pedido": order.creation_date,
+                "fecha_entrega": order.estimated_delivery_date if order.estimated_delivery_date else "",
+                "estado": order.status.value,
+                "carta_representante": url_for("show_pdf", order_id=order.id),
+                "carta_respuesta": url_for("show_pdf_response_letter", order_id=order.id),
+            })
+        return render_template('orders_table_representante.html',
+                               orders=new_dict_orders_list_representante,
                                pagination=pagination)
 
 
@@ -753,6 +794,16 @@ def show_pdf(order_id):
     response = make_response(order.letter)
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = f'inline; filename=carta_insumo_order_{order_id}.pdf'
+    return response
+
+
+@app.route('/show_pdf_response_letter/<int:order_id>')
+@token_required
+def show_pdf_response_letter(order_id):
+    order = Order.query.get_or_404(order_id)
+    response = make_response(order.letter_response)
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = f'inline; filename=respuesta_carta_insumo_order__{order_id}.pdf'
     return response
 
 

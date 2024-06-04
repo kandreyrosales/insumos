@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block content %}
+    {#    <!-- Modal Create Order -->#}
+    {#    <div class="modal fade" id="add_order_modal" tabindex="-1" aria-labelledby="addOrderModalLabel" aria-hidden="true">#}
+    {#        <div class="modal-dialog modal-xl">#}
+    {#            <div class="modal-content">#}
+    {#                <div class="modal-header">#}
+    {#                    <span class="modal-add-insumos-title w-100 text-center" id="addInsumosModalLabel">Formulario de Solicitud</span>#}
+    {#                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>#}
+    {#                </div>#}
+    {#                <div class="modal-body">#}
+    {#                    <div class="container-fluid" id="modal_create_order_container">#}
+    {#                    </div>#}
+    {#                </div>#}
+    {#            </div>#}
+    {#        </div>#}
+    {#    </div>#}
+    <!-- End Modal Create Order -->
+
+    {#    <script>#}
+    {#        // Mantener el estado de los checkboxes entre páginas#}
+    {#        const selectedItems = new Set();#}
+    {#        document.addEventListener('change', (event) => {#}
+    {#            if (event.target.name === 'iteminsumo') {#}
+    {#                if (event.target.checked) {#}
+    {#                    selectedItems.add(event.target.value);#}
+    {#                } else {#}
+    {#                    selectedItems.delete(event.target.value);#}
+    {#                }#}
+    {#            }#}
+    {#        });#}
+    {##}
+    {#        document.addEventListener('htmx:beforeSwap', (event) => {#}
+    {#            // Antes de reemplazar el contenido, almacenar los checkboxes seleccionados#}
+    {#            const inputs = event.target.querySelectorAll('input[name="iteminsumo"]:checked');#}
+    {#            inputs.forEach(input => selectedItems.add(input.value));#}
+    {#        });#}
+    {##}
+    {#        document.addEventListener('htmx:afterSwap', (event) => {#}
+    {#            // Después de reemplazar el contenido, restaurar los checkboxes seleccionados#}
+    {#            const inputs = event.target.querySelectorAll('input[name="iteminsumo"]');#}
+    {#            inputs.forEach(input => {#}
+    {#                if (selectedItems.has(input.value)) {#}
+    {#                    input.checked = true;#}
+    {#                }#}
+    {#            });#}
+    {#        });#}
+    {#        function get_ids_from_checkboxes(){#}
+    {#            return JSON.stringify(Array.from(selectedItems))#}
+    {#        }#}
+    {##}
+    {#    </script>#}
+
+    <div class="row" id="main_row">
+        <div class="col">
+            <div class="row">
+                <span id="insumos_title">Mis Pedidos</span>
+            </div>
+            <div class="container-fluid" id="table_container_index">
+                <div class="row" style="margin-top: 30px" id="orders-representante-table" hx-get="{{ url_for('orders_representante_list') }}" hx-trigger="load" hx-target="#orders-representante-table"></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
