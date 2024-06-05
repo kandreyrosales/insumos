@@ -1,6 +1,5 @@
-
 <div id="edit_order_response"></div>
-<form hx-post="{{ url_for('edit_order', order_id=order_id) }}" hx-target="#edit_order_response" hx-trigger="submit">
+<form id="edit_order_admin_form" hx-post="{{ url_for('edit_order', order_id=order_id) }}" hx-target="#edit_order_response" hx-trigger="submit">
     <div class="mb-3">
         <label for="order_number" class="col-form-label insumos_form_label"># Pedido</label>
         <input type="text" class="form-control placeholder_label_insumos" id="order_number" name="order_number" value="{{ order_id }}" readonly>
@@ -11,7 +10,7 @@
     </div>
     <div class="mb-3">
         <label for="status_order" style="display: block" class="col-form-label insumos_form_label">Estado del pedido</label>
-        <select class="form-control" id="status_order" style="width: 150px" name="status_order">
+        <select class="form-select" id="status_order" style="width: 150px" name="status_order">
             <!-- Options will be loaded here -->
             {% for status in statuses %}
                 <option value="{{ status.name }}" {% if actual_status == status.value %} selected {% endif %}>{{ status.value }}</option>

@@ -20,7 +20,7 @@
             </div>
             <div class="mb-3">
                 <label for="vendorselect" style="display: block" class="col-form-label insumos_form_label">Selecciona el proveedor</label>
-                <select class="form-control" id="vendorselect" style="width: 150px" name="vendorselect">
+                <select class="form-select" id="vendorselect" style="width: 150px" name="vendorselect">
                     <!-- Options will be loaded here -->
                     {% for vendor in vendors %}
                         <option value="{{ vendor.id }}" {% if vendor_selected_id == vendor.id %} selected {% endif %}>{{ vendor.name }}</option>

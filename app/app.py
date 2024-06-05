@@ -407,6 +407,29 @@ def registro_representante():
         return render_template(SIGNUP_URL_REPRESENTATE)
 
 
+def refresh_access_token():
+    refresh_token = session.get("refresh_token")
+    if not refresh_token:
+        return None
+
+    try:
+        response = cognito_client.initiate_auth(
+            ClientId=CLIENT_ID_COGNITO,
+            AuthFlow='REFRESH_TOKEN_AUTH',
+            AuthParameters={
+                'REFRESH_TOKEN': refresh_token
+            }
+        )
+        new_access_token = response['AuthenticationResult']['AccessToken']
+        session['access_token'] = new_access_token
+        return new_access_token
+    except cognito_client.exceptions.NotAuthorizedException:
+        return None
+    except Exception as e:
+        print(f"Error refreshing token: {e}")
+        return None
+
+
 @app.route('/confirmar_cuenta', methods=['GET', 'POST'])
 def confirm_account_code():
     email = request.form['email_not_confirmed']
@@ -453,18 +476,25 @@ def token_required(f):
         if not token:
             return render_template(LOGIN_URL_REPRESENTATE)
         try:
-            decoded_token = jwt.decode(token, options={
-                "verify_signature": False})  # Decode the token without verifying signature
+            decoded_token = jwt.decode(token, options={"verify_signature": False})
             expiration_time = datetime.utcfromtimestamp(decoded_token['exp'])
             current_time = datetime.utcnow()
             if expiration_time > current_time:
                 return f(*args, **kwargs)
             else:
-                return render_template(LOGIN_URL_REPRESENTATE,
-                                       error="Sesión Expirada. Ingrese sus datos de nuevo")
+                new_token = refresh_access_token()
+                if new_token:
+                    return f(*args, **kwargs)
+                else:
+                    return render_template(LOGIN_URL_REPRESENTATE, error="Sesión Expirada. Ingrese sus datos de nuevo")
         except jwt.ExpiredSignatureError:
-            return render_template(LOGIN_URL_REPRESENTATE,
-                                   error="Sesión Expirada. Ingrese sus datos de nuevo")
+            new_token = refresh_access_token()
+            if new_token:
+                return f(*args, **kwargs)
+            else:
+                return render_template(LOGIN_URL_REPRESENTATE, error="Sesión Expirada. Ingrese sus datos de nuevo")
+        except jwt.InvalidTokenError:
+            return render_template(LOGIN_URL_REPRESENTATE, error="Token inválido. Ingrese sus datos de nuevo")
 
     return decorated_function
 
@@ -823,10 +853,10 @@ def edit_insumo(insumo_id):
     """
     Editing an Insumo record based on its ID
     """
-    name = request.form.get('edit_name')
-    stock = request.form.get('edit_stock')
-    unit_cost = request.form.get('edit_unit_cost')
-    vendor_id = int(request.form.get('edit_vendorselect', 0))
+    name = request.form.get('name')
+    stock = request.form.get('stock')
+    unit_cost = request.form.get('unit_cost')
+    vendor_id = int(request.form.get('vendorselect', 0))
     try:
         with app.app_context():
             insumo = Insumo.query.get(insumo_id)
@@ -850,10 +880,9 @@ def edit_insumo(insumo_id):
                                        vendors=vendors,
                                        vendor_selected_id=vendor.id)
     except Exception as e:
-        message = str(e)
         return render_template(
             "custom_alert_message.html",
-            message=e,
+            message=str(e),
             error=True)
 
 
