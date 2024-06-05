@@ -804,7 +804,7 @@ def generate_insumos_list_html():
     lista_insumos_id_raw = request.args.get('insumos_id_list')
     insumos_ids = [int(insumo_id) for insumo_id in json.loads(lista_insumos_id_raw)]
     filtered_insumos = Insumo.query.filter(Insumo.id.in_(insumos_ids)).all()
-    user_email = "kandreyrosales@gmail.com"
+    user_email = session.get("user_email")
     user_signature = Signature.query.filter_by(user_email=user_email).first()
     return render_template(
         'representante/modal_fields_get_insumos_list.html',
@@ -812,6 +812,30 @@ def generate_insumos_list_html():
         user_signature=user_signature
     )
 
+
+@app.route('/api/get_orders_to_delete_html', methods=["GET", "POST"])
+@token_required
+@requires_admin_email()
+def get_orders_to_delete_html():
+    if request.method == 'GET':
+        list_orders_id_raw = request.args.get('orders_id_list')
+        orders_ids = [int(order_id) for order_id in json.loads(list_orders_id_raw)]
+        filtered_orders = Order.query.filter(Order.id.in_(orders_ids)).all()
+        return render_template(
+            'admin/orders_to_delete.html',
+            orders_to_delete=filtered_orders
+        )
+    else:
+        list_orders_id_raw = request.form.get('orders_id_list')
+        orders_ids = [int(order_id) for order_id in json.loads(list_orders_id_raw)]
+        filtered_orders = Order.query.filter(Order.id.in_(orders_ids)).all()
+        for order in filtered_orders:
+            order.status = OrderStatus.CANCELADO
+        db.session.commit()
+        return render_template(
+            'custom_alert_message.html',
+            message='Pedidos cancelados!'
+        )
 
 def filter_vendor(vendor_id: int):
     filtered_vendor = Vendor.query.filter_by(id=vendor_id).all()

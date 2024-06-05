@@ -18,11 +18,28 @@
     </div>
     <!-- End Modal Edit Order Admin -->
 
+    <!-- Modal Cancel Order Admin -->
+    <div class="modal fade" id="cancel_order_admin_modal" tabindex="-1" aria-labelledby="cancelOrderAdminModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="modal-add-insumos-title w-100 text-center" id="cancelOrderAdminModalLabel">Cancelar Pedidos</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid" id="modal_cancel_order_admin_container">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Modal Cancel Order Adminn -->
+
     <script>
         // Mantener el estado de los checkboxes entre páginas
         const selectedItems = new Set();
         document.addEventListener('change', (event) => {
-            if (event.target.name === 'iteminsumo') {
+            if (event.target.name === 'order_checkbox') {
                 if (event.target.checked) {
                     selectedItems.add(event.target.value);
                 } else {
@@ -33,13 +50,13 @@
 
         document.addEventListener('htmx:beforeSwap', (event) => {
             // Antes de reemplazar el contenido, almacenar los checkboxes seleccionados
-            const inputs = event.target.querySelectorAll('input[name="iteminsumo"]:checked');
+            const inputs = event.target.querySelectorAll('input[name="order_checkbox"]:checked');
             inputs.forEach(input => selectedItems.add(input.value));
         });
 
         document.addEventListener('htmx:afterSwap', (event) => {
             // Después de reemplazar el contenido, restaurar los checkboxes seleccionados
-            const inputs = event.target.querySelectorAll('input[name="iteminsumo"]');
+            const inputs = event.target.querySelectorAll('input[name="order_checkbox"]');
             inputs.forEach(input => {
                 if (selectedItems.has(input.value)) {
                     input.checked = true;
@@ -57,20 +74,47 @@
                 <span id="insumos_title">Pedidos</span>
             </div>
             <div class="row">
-                <div class="d-grid d-flex" id="table_container_index">
-                    <div class="col-md-3 me-3">
-                        <label for="query_representante_name" class="col-form-label insumos_form_label">Nombre Representante</label>
-                        <input type="search" class="form-control" name="query_representante_name" id="query_representante_name" placeholder="Buscar por representante..." hx-get="{{ url_for('search_orders_admin') }}" hx-target="#orders-admin-table" hx-trigger="keyup changed delay:500ms, search">
+                <div class="d-grid d-flex justify-content-between align-items-start" id="table_container_index">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col me-3">
+                                <label for="query_representante_name" class="col-form-label insumos_form_label">Nombre Representante</label>
+                                <input type="search" class="form-control" name="query_representante_name" id="query_representante_name" placeholder="Buscar por representante..." hx-get="{{ url_for('search_orders_admin') }}" hx-target="#orders-admin-table" hx-trigger="keyup changed delay:500ms, search">
+                            </div>
+                            <div class="col me-3">
+                                <label for="query_status" style="display: block" class="col-form-label insumos_form_label">Estado del pedido</label>
+                                <select class="form-select" style="display: block" id="query_status" name="query_status" hx-get="{{ url_for('search_orders_admin') }}" hx-target="#orders-admin-table" hx-trigger="change">
+                                    <!-- Options will be loaded here -->
+                                    <option value="todos">Todos</option>
+                                    {% for status in statuses %}
+                                        <option value="{{ status.name }}">{{ status.value }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-3 me-3">
-                        <label for="query_status" style="display: block" class="col-form-label insumos_form_label">Estado del pedido</label>
-                        <select class="form-select" id="query_status" name="query_status" hx-get="{{ url_for('search_orders_admin') }}" hx-target="#orders-admin-table" hx-trigger="change">
-                            <!-- Options will be loaded here -->
-                            <option value="todos">Todos</option>
-                            {% for status in statuses %}
-                                <option value="{{ status.name }}">{{ status.value }}</option>
-                            {% endfor %}
-                        </select>
+                    <div class="col-md-3">
+                        <label style="visibility: hidden;"></label>
+                        <!-- Cancel Order button -->
+                        <a href="#" id="a_svg_cancel_order" data-bs-toggle="modal" data-bs-target="#cancel_order_admin_modal" hx-get="{{ url_for('get_orders_to_delete_html') }}"  hx-vals='js:{orders_id_list: get_ids_from_checkboxes()}' hx-target="#modal_cancel_order_admin_container">
+                            <svg width="210" height="50" viewBox="0 0 211 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g clip-path="url(#clip0_10_732)">
+                                    <rect width="210.41" height="50" fill="#FF3162"/>
+                                    <rect width="73.64" height="51.12" transform="matrix(1 0 -0.207912 0.978148 161.72 0)" fill="#EF2656"/>
+                                    <path d="M32.1791 25C32.1791 23.764 32.4551 22.66 33.0071 21.688C33.5711 20.704 34.3331 19.942 35.2931 19.402C36.2651 18.85 37.3511 18.574 38.5511 18.574C39.9551 18.574 41.1851 18.934 42.2411 19.654C43.2971 20.374 44.0351 21.37 44.4551 22.642H41.5571C41.2691 22.042 40.8611 21.592 40.3331 21.292C39.8171 20.992 39.2171 20.842 38.5331 20.842C37.8011 20.842 37.1471 21.016 36.5711 21.364C36.0071 21.7 35.5631 22.18 35.2391 22.804C34.9271 23.428 34.7711 24.16 34.7711 25C34.7711 25.828 34.9271 26.56 35.2391 27.196C35.5631 27.82 36.0071 28.306 36.5711 28.654C37.1471 28.99 37.8011 29.158 38.5331 29.158C39.2171 29.158 39.8171 29.008 40.3331 28.708C40.8611 28.396 41.2691 27.94 41.5571 27.34H44.4551C44.0351 28.624 43.2971 29.626 42.2411 30.346C41.1971 31.054 39.9671 31.408 38.5511 31.408C37.3511 31.408 36.2651 31.138 35.2931 30.598C34.3331 30.046 33.5711 29.284 33.0071 28.312C32.4551 27.34 32.1791 26.236 32.1791 25ZM54.8115 28.906H49.8075L48.9795 31.3H46.3335L50.8515 18.718H53.7855L58.3035 31.3H55.6395L54.8115 28.906ZM54.1275 26.89L52.3095 21.634L50.4915 26.89H54.1275ZM71.2383 31.3H68.7183L63.0123 22.678V31.3H60.4923V18.718H63.0123L68.7183 27.358V18.718H71.2383V31.3ZM73.6166 25C73.6166 23.764 73.8926 22.66 74.4446 21.688C75.0086 20.704 75.7706 19.942 76.7306 19.402C77.7026 18.85 78.7886 18.574 79.9886 18.574C81.3926 18.574 82.6226 18.934 83.6786 19.654C84.7346 20.374 85.4726 21.37 85.8926 22.642H82.9946C82.7066 22.042 82.2986 21.592 81.7706 21.292C81.2546 20.992 80.6546 20.842 79.9706 20.842C79.2386 20.842 78.5846 21.016 78.0086 21.364C77.4446 21.7 77.0006 22.18 76.6766 22.804C76.3646 23.428 76.2086 24.16 76.2086 25C76.2086 25.828 76.3646 26.56 76.6766 27.196C77.0006 27.82 77.4446 28.306 78.0086 28.654C78.5846 28.99 79.2386 29.158 79.9706 29.158C80.6546 29.158 81.2546 29.008 81.7706 28.708C82.2986 28.396 82.7066 27.94 82.9946 27.34H85.8926C85.4726 28.624 84.7346 29.626 83.6786 30.346C82.6346 31.054 81.4046 31.408 79.9886 31.408C78.7886 31.408 77.7026 31.138 76.7306 30.598C75.7706 30.046 75.0086 29.284 74.4446 28.312C73.8926 27.34 73.6166 26.236 73.6166 25ZM91.065 20.77V23.92H95.295V25.918H91.065V29.248H95.835V31.3H88.545V18.718H95.835V20.77H91.065ZM101.145 29.302H105.285V31.3H98.6251V18.736H101.145V29.302ZM115.091 28.906H110.087L109.259 31.3H106.613L111.131 18.718H114.065L118.583 31.3H115.919L115.091 28.906ZM114.407 26.89L112.589 21.634L110.771 26.89H114.407ZM127.252 31.3L124.48 26.404H123.292V31.3H120.772V18.736H125.488C126.46 18.736 127.288 18.91 127.972 19.258C128.656 19.594 129.166 20.056 129.502 20.644C129.85 21.22 130.024 21.868 130.024 22.588C130.024 23.416 129.784 24.166 129.304 24.838C128.824 25.498 128.11 25.954 127.162 26.206L130.168 31.3H127.252ZM123.292 24.514H125.398C126.082 24.514 126.592 24.352 126.928 24.028C127.264 23.692 127.432 23.23 127.432 22.642C127.432 22.066 127.264 21.622 126.928 21.31C126.592 20.986 126.082 20.824 125.398 20.824H123.292V24.514Z" fill="white"/>
+                                    <path d="M174.051 21.7342C173.206 20.6076 174.01 19 175.418 19H186.582C187.99 19 188.794 20.6076 187.949 21.7342V21.7342C187.333 22.5558 187 23.5552 187 24.5823V31C187 33.2091 185.209 35 183 35H179C176.791 35 175 33.2091 175 31V24.5823C175 23.5552 174.667 22.5558 174.051 21.7342V21.7342Z" stroke="white" stroke-width="1.5"/>
+                                    <path d="M183 30L183 24" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M179 30L179 24" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M185 19L184.456 17.3675C184.184 16.5509 183.419 16 182.558 16H179.442C178.581 16 177.816 16.5509 177.544 17.3675L177 19" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                </g>
+                                <defs>
+                                    <clipPath id="clip0_10_732">
+                                        <rect width="210.41" height="50" fill="white"/>
+                                    </clipPath>
+                                </defs>
+                            </svg>
+                        </a>
+
                     </div>
                 </div>
             </div>
