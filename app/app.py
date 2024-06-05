@@ -607,11 +607,30 @@ def insumos_list():
     with app.app_context():
         page = request.args.get('page', 1, type=int)
         per_page = 10  # Number of records per page
-        pagination = Insumo.query.paginate(page=page, per_page=per_page, max_per_page=10, count=True, error_out=False)
+        pagination = Insumo.query.order_by(Insumo.last_updated.desc()).paginate(
+            page=page, per_page=per_page, max_per_page=10, count=True, error_out=False)
         insumos = pagination.items
         return render_template('admin/insumos_table.html',
                                insumos=insumos,
                                pagination=pagination)
+
+
+@app.route('/search_insumos', methods=['GET'])
+@token_required
+@requires_admin_email()
+def search_insumos():
+    query = request.args.get('query', '')
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 10, type=int)
+
+    if query:
+        insumos = Insumo.query.filter(Insumo.name.ilike(f'%{query}%')).order_by(Insumo.last_updated.desc()).paginate(
+            page=page, per_page=per_page, max_per_page=10, count=True, error_out=False)
+    else:
+        insumos = Insumo.query.order_by(Insumo.last_updated.desc()).paginate(
+            page=page, per_page=per_page, max_per_page=10, count=True, error_out=False)
+
+    return render_template('admin/insumos_table.html', insumos=insumos.items, pagination=insumos)
 
 
 @app.route('/api/insumos_representante', methods=["GET"])
