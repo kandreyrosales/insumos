@@ -359,7 +359,7 @@ def login_representante():
         session['id_token'] = auth_result.get('IdToken')
         session['user_email'] = username
         with app.app_context():
-            if username == "admin@bayer.com":
+            if username == ADMIN_EMAIL:
                 return redirect(url_for('index_admin'))
             elif BayerUser.query.filter_by(email=username).first():
                 return redirect(url_for('representante'))
