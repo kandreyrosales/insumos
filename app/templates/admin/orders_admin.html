@@ -56,9 +56,25 @@
             <div class="row">
                 <span id="insumos_title">Pedidos</span>
             </div>
-            <div class="container-fluid" id="table_container_index">
-                <div class="row" style="margin-top: 30px" id="orders-admin-table" hx-get="{{ url_for('orders_admin_list') }}" hx-trigger="load" hx-target="#orders-admin-table"></div>
+            <div class="row">
+                <div class="d-grid d-flex" id="table_container_index">
+                    <div class="col-md-3 me-3">
+                        <label for="query_representante_name" class="col-form-label insumos_form_label">Nombre Representante</label>
+                        <input type="search" class="form-control" name="query_representante_name" id="query_representante_name" placeholder="Buscar por representante..." hx-get="{{ url_for('search_orders_admin') }}" hx-target="#orders-admin-table" hx-trigger="keyup changed delay:500ms, search">
+                    </div>
+                    <div class="col-md-3 me-3">
+                        <label for="query_status" style="display: block" class="col-form-label insumos_form_label">Estado del pedido</label>
+                        <select class="form-select" id="query_status" name="query_status" hx-get="{{ url_for('search_orders_admin') }}" hx-target="#orders-admin-table" hx-trigger="change">
+                            <!-- Options will be loaded here -->
+                            <option value="todos">Todos</option>
+                            {% for status in statuses %}
+                                <option value="{{ status.name }}">{{ status.value }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
             </div>
+            <div class="row" style="margin-top: 30px" id="orders-admin-table" hx-get="{{ url_for('search_orders_admin') }}" hx-trigger="load" hx-target="#orders-admin-table"></div>
         </div>
     </div>
 {% endblock %}

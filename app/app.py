@@ -466,6 +466,7 @@ def confirm_account_code():
 def logout():
     # Clear the session data
     session.clear()
+    db.session.remove()
     return redirect(url_for('login_representante'))
 
 
@@ -486,12 +487,14 @@ def token_required(f):
                 if new_token:
                     return f(*args, **kwargs)
                 else:
+                    db.session.remove()
                     return render_template(LOGIN_URL_REPRESENTATE, error="Sesión Expirada. Ingrese sus datos de nuevo")
         except jwt.ExpiredSignatureError:
             new_token = refresh_access_token()
             if new_token:
                 return f(*args, **kwargs)
             else:
+                db.session.remove()
                 return render_template(LOGIN_URL_REPRESENTATE, error="Sesión Expirada. Ingrese sus datos de nuevo")
         except jwt.InvalidTokenError:
             return render_template(LOGIN_URL_REPRESENTATE, error="Token inválido. Ingrese sus datos de nuevo")
@@ -615,6 +618,49 @@ def insumos_list():
                                pagination=pagination)
 
 
+def search_query_insumos(query, page, per_page):
+    if query:
+        insumos = (
+            Insumo.query.filter(Insumo.name.ilike(f'%{query}%'))
+            .order_by(Insumo.last_updated.desc())
+            .paginate(page=page, per_page=per_page, max_per_page=10, count=True, error_out=False)
+        )
+    else:
+        insumos = Insumo.query.order_by(Insumo.last_updated.desc()).paginate(
+            page=page, per_page=per_page, max_per_page=10, count=True, error_out=False)
+    return insumos
+
+
+def search_query_orders_admin(query, page, per_page, field):
+    if query:
+        if field == 'status':
+            if query == 'todos':
+                return Order.query.order_by(Order.id.desc()).paginate(
+                    page=page, per_page=per_page, max_per_page=10, count=True, error_out=False)
+            else:
+                orders = (
+                    Order.query.filter(Order.status == query)
+                    .order_by(Order.id.desc())
+                    .paginate(page=page, per_page=per_page, max_per_page=10, count=True, error_out=False)
+                )
+        elif field == 'representante':
+            email_tuples = BayerUser.query.with_entities(BayerUser.email).filter(
+                BayerUser.name.ilike(f'%{query}%')).all()
+            emails = [email[0] for email in email_tuples]
+            orders = (
+                Order.query.filter(Order.user_email.in_(emails))
+                .order_by(Order.id.desc())
+                .paginate(page=page, per_page=per_page, max_per_page=10, count=True, error_out=False)
+            )
+        else:
+            return Order.query.order_by(Order.id.desc()).paginate(
+                page=page, per_page=per_page, max_per_page=10, count=True, error_out=False)
+    else:
+        return Order.query.order_by(Order.id.desc()).paginate(
+            page=page, per_page=per_page, max_per_page=10, count=True, error_out=False)
+    return orders
+
+
 @app.route('/search_insumos', methods=['GET'])
 @token_required
 @requires_admin_email()
@@ -622,15 +668,65 @@ def search_insumos():
     query = request.args.get('query', '')
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 10, type=int)
-
-    if query:
-        insumos = Insumo.query.filter(Insumo.name.ilike(f'%{query}%')).order_by(Insumo.last_updated.desc()).paginate(
-            page=page, per_page=per_page, max_per_page=10, count=True, error_out=False)
-    else:
-        insumos = Insumo.query.order_by(Insumo.last_updated.desc()).paginate(
-            page=page, per_page=per_page, max_per_page=10, count=True, error_out=False)
-
+    insumos = search_query_insumos(query=query, per_page=per_page, page=page)
     return render_template('admin/insumos_table.html', insumos=insumos.items, pagination=insumos)
+
+
+@app.route('/search_orders_admin', methods=['GET'])
+@token_required
+@requires_admin_email()
+def search_orders_admin():
+    query_representante_name = request.args.get('query_representante_name', '')
+    query_status = request.args.get('query_status', '')
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 10, type=int)
+    if query_representante_name:
+        pagination = search_query_orders_admin(query=query_representante_name,
+                                               per_page=per_page, page=page,
+                                               field='representante')
+    elif query_status:
+        pagination = search_query_orders_admin(query=query_status,
+                                               per_page=per_page, page=page,
+                                               field='status')
+    else:
+        pagination = Order.query.paginate(page=page,
+                                          per_page=per_page, max_per_page=10,
+                                          count=True, error_out=False)
+    new_dict_orders_list = []
+    for order in pagination.items:
+        bayer_user = BayerUser.query.filter_by(email=order.user_email).first()
+        new_dict_orders_list.append({
+            "id": order.id,
+            "representante": bayer_user.name,
+            "institucion_entrega": order.delivery_institute,
+            "customer_team": bayer_user.customer_team,
+            "total": order.total,
+            "fecha_pedido": order.creation_date,
+            "fecha_entrega": datetime.strftime(order.estimated_delivery_date,
+                                               "%d-%m-%Y") if order.estimated_delivery_date else "",
+            "estado": order.status.value,
+            "carta_representante": url_for("show_pdf", order_id=order.id),
+            "carta_respuesta": url_for("show_pdf_response_letter", order_id=order.id)
+            if order.letter_response else '',
+        })
+    return render_template(
+        'admin/orders_table.html',
+        orders=new_dict_orders_list,
+        pagination=pagination
+    )
+
+
+@app.route('/search_insumos_representante', methods=['GET'])
+@token_required
+def search_insumos_representante():
+    query = request.args.get('query', '')
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 10, type=int)
+    insumos = search_query_insumos(query=query, per_page=per_page, page=page)
+    return render_template(
+        'representante/insumos_table_representante.html',
+        insumos=insumos.items,
+        pagination=insumos)
 
 
 @app.route('/api/insumos_representante', methods=["GET"])
@@ -650,7 +746,11 @@ def insumos_representante_list():
 @token_required
 @requires_admin_email()
 def pedidos():
-    return render_template('admin/orders_admin.html', admin_user=True)
+    return render_template(
+        'admin/orders_admin.html',
+        admin_user=True,
+        statuses=[status for status in OrderStatus]
+    )
 
 
 @app.route('/pedidos_representante', methods=["GET"])
@@ -658,35 +758,6 @@ def pedidos():
 def pedidos_representante():
     return render_template('representante/orders_representante.html',
                            user_admin=False)
-
-
-@app.route('/api/orders_admin', methods=["GET"])
-@token_required
-@requires_admin_email()
-def orders_admin_list():
-    with app.app_context():
-        page = request.args.get('page', 1, type=int)
-        per_page = 10  # Number of records per page
-        pagination = Order.query.paginate(page=page, per_page=per_page, max_per_page=10, count=True, error_out=False)
-        orders = pagination.items
-        new_dict_orders_list = []
-        for order in orders:
-            bayer_user = BayerUser.query.filter_by(email=order.user_email).first()
-            new_dict_orders_list.append({
-                "id": order.id,
-                "representante": bayer_user.name,
-                "institucion_entrega": order.delivery_institute,
-                "customer_team": bayer_user.customer_team,
-                "total": order.total,
-                "fecha_pedido": order.creation_date,
-                "fecha_entrega": datetime.strftime(order.estimated_delivery_date, "%d-%m-%Y") if order.estimated_delivery_date else "",
-                "estado": order.status.value,
-                "carta_representante": url_for("show_pdf", order_id=order.id),
-                "carta_respuesta": url_for("show_pdf_response_letter", order_id=order.id) if order.letter_response else '',
-            })
-        return render_template('admin/orders_table.html',
-                               orders=new_dict_orders_list,
-                               pagination=pagination)
 
 
 @app.route('/api/orders_representante', methods=["GET"])
@@ -716,7 +787,8 @@ def orders_representante_list():
                 "customer_team": bayer_user.customer_team,
                 "total": order.total,
                 "fecha_pedido": order.creation_date,
-                "fecha_entrega": order.estimated_delivery_date if order.estimated_delivery_date else "",
+                "fecha_entrega": datetime.strftime(order.estimated_delivery_date, "%d-%m-%Y")
+                if order.estimated_delivery_date else "",
                 "estado": order.status.value,
                 "carta_representante": url_for("show_pdf", order_id=order.id),
                 "carta_respuesta": carta_respuesta,

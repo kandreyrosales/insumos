@@ -59,6 +59,9 @@
             <div class="container-fluid" id="table_container_index">
                 <div class="row">
                     <div class="d-grid d-flex justify-content-between">
+                        <div class="col-md-4">
+                            <input type="search" class="form-control" name="query" placeholder="Buscar Insumos..." hx-get="{{ url_for('search_insumos_representante') }}" hx-target="#insumos-table" hx-trigger="keyup changed delay:500ms, search">
+                        </div>
                         <a href="#" id="a_svg_generate_order" data-bs-toggle="modal" data-bs-target="#add_order_modal" hx-get="{{ url_for('generate_insumos_list_html') }}"  hx-vals='js:{insumos_id_list: get_ids_from_checkboxes()}' hx-target="#modal_create_order_container">
                             <svg width="210" height="48" viewBox="0 0 210 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <g clip-path="url(#clip0_2_448)">
