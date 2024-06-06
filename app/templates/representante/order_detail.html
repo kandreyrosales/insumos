@@ -121,6 +121,10 @@
             input.value = signatureData;
             saveSignatureBtn.insertAdjacentElement('beforebegin', input);
             document.getElementById('close_btn_generate_signature_modal').click();
+            Swal.fire({
+                text: "Nos complace informarle que su carta de solicitud de insumos ha sido enviada con éxito.",
+                icon: "success"
+            });
         });
 
         // Event listener to save signature
@@ -133,6 +137,10 @@
             input.value = signatureDataResponseLetter;
             saveSignatureResponseLetterBtn.insertAdjacentElement('beforebegin', input);
             document.getElementById('close_btn_generate_signature_response_modal').click();
+            Swal.fire({
+                text: "Nos complace informarle que su carta de respuesta ha sido enviada con éxito.",
+                icon: "success"
+            });
         });
     </script>
 
