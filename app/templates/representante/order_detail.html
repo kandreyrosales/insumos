@@ -133,7 +133,7 @@
     </script>
 
     <div class="row" id="main_row">
-        <div class="d-grid d-flex justify-content-between" id="letters_data" hx-get="{{ url_for('get_letter_html', order_id=order_id) }}" hx-trigger="load" hx-target="#letters_data">
+        <div class="d-grid d-flex justify-content-between" id="letters_data" hx-get="{{ url_for('get_letter_html', order_id=order_id) }}" hx-trigger="load" hx-target="#letters_data" hx-swap="innerHTML">
         </div>
     </div>
 

@@ -38,11 +38,9 @@
         </div>
     </div>
     <div class="row">
-        {% if order_letter_signature %}
             <div id="embed_letter_pdf">
                 <embed src="{{ url_for('order_pdf_letter', order_id=order_id, type_letter='letter') }}" type="application/pdf" width="100%" height="700px">
             </div>
-        {% endif %}
     </div>
 </div>
 <div class="col me-3">
@@ -85,7 +83,7 @@
         </div>
     </div>
     <div class="row">
-        {% if order_letter_response_signature %}
+        {% if order_letter_signature %}
             <div id="embed_letter_pdf">
                 <embed src="{{ url_for('order_pdf_letter', order_id=order_id, type_letter='letter_response') }}" type="application/pdf" width="100%" height="700px">
             </div>
