@@ -43,7 +43,7 @@ CONFIRM_ACCOUNT_CODE_URL = 'login/confirm_account_code.html'
 RESET_PASSWORD_URL = 'login/reset_password.html'
 SEND_RESET_PASSWORD_LINK = 'login/send_reset_password_link.html'
 
-ADMIN_EMAIL = 'lilian.heredia@xaldigital.com'
+ADMIN_EMAILS = ['lilian.heredia@xaldigital.com', 'carla.galindo@bayer.com']
 
 TYPE_LETTER_RESPONSE = 'letter_response'
 TYPE_LETTER = 'letter'
@@ -222,6 +222,8 @@ def initial_data():
             "WETLIA,HERRERA LIMON MARIO,MEBPT,CALLE 12 PONIENTE,No 912,,LA LIBERTAD,PUEBLA,PUE,72130,222 3509687,mario.herrera@bayer.com",
             "WETLIA,XALDIGITAL REPRESENTANTE TEST,MEBPZ,CALLE 12 PONIENTE,No 912,,LA LIBERTAD,PUEBLA,PUE,72130,222 3509687,kandreyrosales@gmail.com",
             "WETLIA,XALDIGITAL ADMIN TEST,ABCDE,CALLE 12 PONIENTE,No 912,,LA LIBERTAD,PUEBLA,PUE,72130,222 3509687,lilian.heredia@xaldigital.com",
+            "WETLIA,CARLA GALINDO,ADMIN1,CALLE 12 PONIENTE,No 912,,LA LIBERTAD,PUEBLA,PUE,72130,222 3509687,carla.galindo@bayer.com",
+            "WETLIA,MIRIAM SOLTERO,REPR1,CALLE 12 PONIENTE,No 912,,LA LIBERTAD,PUEBLA,PUE,72130,222 3509687,miriam.soltero@bayer.com"
 
         ]
         for entry in bayer_cwid_initial_data:
@@ -328,7 +330,7 @@ def requires_admin_email():
     def decorator(func):
         @wraps(func)
         def decorated_function(*args, **kwargs):
-            if session.get('user_email') != ADMIN_EMAIL:
+            if session.get('user_email') in ADMIN_EMAILS:
                 return redirect(url_for('representante'))
             return func(*args, **kwargs)
 
@@ -367,7 +369,7 @@ def login_representante():
         session['id_token'] = auth_result.get('IdToken')
         session['user_email'] = username
         with app.app_context():
-            if username == ADMIN_EMAIL:
+            if username in ADMIN_EMAILS:
                 return redirect(url_for('index_admin'))
             elif BayerUser.query.filter_by(email=username).first():
                 return redirect(url_for('representante'))
