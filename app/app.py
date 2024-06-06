@@ -712,10 +712,7 @@ def search_orders_admin():
             "fecha_pedido": order.creation_date,
             "fecha_entrega": datetime.strftime(order.estimated_delivery_date,
                                                "%d-%m-%Y") if order.estimated_delivery_date else "",
-            "estado": order.status.value,
-            "carta_representante": url_for("show_pdf", order_id=order.id),
-            "carta_respuesta": url_for("show_pdf_response_letter", order_id=order.id)
-            if order.letter_response else '',
+            "estado": order.status.value
         })
     return render_template(
         'admin/orders_table.html',
@@ -1052,23 +1049,7 @@ def edit_order(order_id):
             order = Order.query.get(order_id)
             if request.method == "POST":
                 order.estimated_delivery_date = estimated_delivery_date
-                if status == OrderStatus.EN_CAMINO.name:
-                    signature = Signature.query.filter_by(user_email=order.user_email).first()
-                    representante = BayerUser.query.filter_by(email=order.user_email).first()
-                    representante_signature = base64.b64encode(signature.signature_image).decode('utf-8')
-                    pdf_data = generate_letter_response(
-                        order_id=order_id,
-                        medico_solicitante=order.doctor_name,
-                        posicion_medico=order.doctor_position,
-                        nombre_institucion=order.delivery_institute,
-                        representante_signature=representante_signature,
-                        nombre_representante=representante.name
-                    )
-                    order.status = OrderStatus.EN_CAMINO
-                    order.letter_response = pdf_data
-                    order.letter_response_date = datetime.now().date()
-                else:
-                    order.status = status
+                order.status = status
                 db.session.commit()
                 return render_template(
                     "custom_alert_message.html",
@@ -1092,7 +1073,7 @@ def edit_order(order_id):
         message = str(e)
         return render_template(
             "custom_alert_message.html",
-            message=e,
+            message=message,
             error=True)
 
 
