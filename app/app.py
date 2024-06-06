@@ -18,10 +18,10 @@ from xhtml2pdf import pisa
 app = Flask(__name__)
 
 db_host = os.getenv("db_endpoint").split(":")[0]
-db_name = "insumos_db"
-# db_name = "insumos"
-db_user = "insumos_user"
-# db_user = "kandreyrosales"
+# db_name = "insumos_db"
+db_name = "insumos"
+# db_user = "insumos_user"
+db_user = "kandreyrosales"
 db_password = os.getenv("db_password")
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{db_user}:{db_password}@{db_host}:5432/{db_name}'
@@ -223,7 +223,6 @@ def initial_data():
             "WETLIA,XALDIGITAL REPRESENTANTE TEST,MEBPZ,CALLE 12 PONIENTE,No 912,,LA LIBERTAD,PUEBLA,PUE,72130,222 3509687,kandreyrosales@gmail.com",
             "WETLIA,XALDIGITAL ADMIN TEST,ABCDE,CALLE 12 PONIENTE,No 912,,LA LIBERTAD,PUEBLA,PUE,72130,222 3509687,lilian.heredia@xaldigital.com",
             "WETLIA,CARLA GALINDO,ADMIN1,CALLE 12 PONIENTE,No 912,,LA LIBERTAD,PUEBLA,PUE,72130,222 3509687,carla.galindo@bayer.com",
-            "WETLIA,MIRIAM SOLTERO,REPR1,CALLE 12 PONIENTE,No 912,,LA LIBERTAD,PUEBLA,PUE,72130,222 3509687,miriam.soltero@bayer.com"
 
         ]
         for entry in bayer_cwid_initial_data:
