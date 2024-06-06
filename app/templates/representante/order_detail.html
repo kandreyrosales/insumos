@@ -22,7 +22,7 @@
                                                 hx-include="#signatureCanvas"
                                                 hx-trigger="click"
                                                 hx-target="#letters_data"
-                                                hx-swap="outerHTML">
+                                                hx-swap="innerHTML">
                                             <svg width="265" height="50" viewBox="0 0 265 50" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <g clip-path="url(#clip0_9_442)">
                                                     <rect width="265" height="50" fill="#DE0043"/>
@@ -70,7 +70,7 @@
                                                 hx-include="#signatureCanvasResponseLetter"
                                                 hx-trigger="click"
                                                 hx-target="#letters_data"
-                                                hx-swap="outerHTML">
+                                                hx-swap="innerHTML">
                                             <svg width="265" height="50" viewBox="0 0 265 50" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <g clip-path="url(#clip0_9_442)">
                                                     <rect width="265" height="50" fill="#DE0043"/>
@@ -112,7 +112,7 @@
 
 
         // Event listener to save signature
-        const saveSignatureBtn = document.querySelector('#btn_save_signature_letter');
+        const saveSignatureBtn = document.querySelector('#btn_save_signature_letter[hx-post]');
         saveSignatureBtn.addEventListener('click', () => {
             const signatureData = captureSignature();
             const input = document.createElement('input');
@@ -128,7 +128,7 @@
         });
 
         // Event listener to save signature
-        const saveSignatureResponseLetterBtn = document.querySelector('#btn_save_signature_letter_response');
+        const saveSignatureResponseLetterBtn = document.querySelector('#btn_save_signature_letter_response[hx-post]');
         saveSignatureResponseLetterBtn.addEventListener('click', () => {
             const signatureDataResponseLetter = captureSignatureResponseLetter();
             const input = document.createElement('input');

@@ -2,7 +2,7 @@
     <div class="row mb-3">
         <div class="col d-flex align-items-center justify-content-between">
             <span class="title_letters">Carta solicitud de insumos</span>
-            <button class="btn" style="display: flex;align-items: center;" id="a_svg_generate_signature" data-bs-toggle="modal" data-bs-target="#generate_signature_modal" {% if order_letter_signature %} disabled="true" {% endif %}>
+            <button class="btn" style="display: flex;align-items: center;" id="svg_generate_signature" data-bs-toggle="modal" data-bs-target="#generate_signature_modal" {% if order_letter_signature %} disabled="true" {% endif %}>
                 {% if not order_letter_signature %}
                     <svg width="265" height="50" viewBox="0 0 265 50" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g clip-path="url(#clip0_9_442)">
@@ -47,7 +47,7 @@
     <div class="row mb-3">
         <div class="col d-flex align-items-center justify-content-between">
             <span class="title_letters">Carta respuesta</span>
-            <button class="btn" style="display: flex;align-items: center;" id="a_svg_generate_signature_letter" data-bs-toggle="modal" data-bs-target="#generate_signature_modal_response_letter" {% if not order_letter_signature %} disabled="true" {% endif %}>
+            <button class="btn" style="display: flex;align-items: center;" id="svg_generate_signature_letter" data-bs-toggle="modal" data-bs-target="#generate_signature_modal_response_letter" {% if not order_letter_signature %} disabled="true" {% endif %}>
                 {% if not order_letter_signature or (order_letter_signature and order_letter_response_signature) %}
                     <svg width="265" height="50" viewBox="0 0 265 50" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g clip-path="url(#clip0_33_699)">
@@ -84,7 +84,7 @@
     </div>
     <div class="row">
         {% if order_letter_signature %}
-            <div id="embed_letter_pdf">
+            <div id="embed_letter_response_pdf">
                 <embed src="{{ url_for('order_pdf_letter', order_id=order_id, type_letter='letter_response') }}" type="application/pdf" width="100%" height="700px">
             </div>
         {% endif %}
