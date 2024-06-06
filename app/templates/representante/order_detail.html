@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="modal fade" id="generate_signature_modal" tabindex="-1" aria-labelledby="generateSignatureModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="modal-add-insumos-title w-100 text-center" id="generateSignatureModalLabel">Firma aquí</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid" id="modal_generate_signature_container">
+                        <div class="row">
+                            <span class="mb-5"> Por favor, escribe tu firma dentro del recuadro proporcionado. Asegúrate de mantener tu firma clara y legible. Evita salirte del área designada</span>
+                            <form id="signature_doctor">
+                                <div class="justify-content-center">
+                                    <div class="row mb-5">
+                                        <canvas id="signatureCanvas" width="400" height="200"></canvas>
+                                    </div>
+                                    <div class="row">
+                                        <button class="btn btn-primary" hx-post="{{ url_for('upload_signature') }}"
+                                                hx-encoding="multipart/form-data"
+                                                hx-include="#signatureCanvas"
+                                                hx-trigger="click"
+                                                hx-target="#embed_letter_pdf"
+                                                hx-swap="innerHTML">
+                                            Save Signature
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.5.3/signature_pad.min.js"></script>
+    <script>
+        var canvas = document.getElementById('signatureCanvas');
+        var signaturePad = new SignaturePad(canvas);
+
+        function captureSignature() {
+            return canvas.toDataURL();
+        }
+
+        // Event listener to save signature
+        const saveSignatureBtn = document.querySelector('button[hx-post]');
+        saveSignatureBtn.addEventListener('click', () => {
+            const signatureData = captureSignature();
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'signature_{{ order_id }}';
+            input.value = signatureData;
+            saveSignatureBtn.insertAdjacentElement('beforebegin', input);
+        });
+    </script>
+
+    <div class="row" id="main_row">
+        <div class="col">
+            <div class="row mb-3">
+                <span id="insumos_title">Generar Carta</span>
+            </div>
+            <div class="container-fluid">
+                <div class="row mb-3">
+                    <a href="#" id="a_svg_generate_signature" data-bs-toggle="modal" data-bs-target="#generate_signature_modal">
+                        <svg width="265" height="50" viewBox="0 0 265 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g clip-path="url(#clip0_9_442)">
+                                <rect width="265" height="50" fill="#DE0043"/>
+                                <rect width="100" height="51.117" transform="matrix(1 0 -0.207912 0.978148 215.312 0)" fill="#FF3162"/>
+                                <path d="M37.99 21.216C37.702 20.688 37.306 20.286 36.802 20.01C36.298 19.734 35.71 19.596 35.038 19.596C34.294 19.596 33.634 19.764 33.058 20.1C32.482 20.436 32.032 20.916 31.708 21.54C31.384 22.164 31.222 22.884 31.222 23.7C31.222 24.54 31.384 25.272 31.708 25.896C32.044 26.52 32.506 27 33.094 27.336C33.682 27.672 34.366 27.84 35.146 27.84C36.106 27.84 36.892 27.588 37.504 27.084C38.116 26.568 38.518 25.854 38.71 24.942H34.39V23.016H41.194V25.212C41.026 26.088 40.666 26.898 40.114 27.642C39.562 28.386 38.848 28.986 37.972 29.442C37.108 29.886 36.136 30.108 35.056 30.108C33.844 30.108 32.746 29.838 31.762 29.298C30.79 28.746 30.022 27.984 29.458 27.012C28.906 26.04 28.63 24.936 28.63 23.7C28.63 22.464 28.906 21.36 29.458 20.388C30.022 19.404 30.79 18.642 31.762 18.102C32.746 17.55 33.838 17.274 35.038 17.274C36.454 17.274 37.684 17.622 38.728 18.318C39.772 19.002 40.492 19.968 40.888 21.216H37.99ZM46.0784 19.47V22.62H50.3084V24.618H46.0784V27.948H50.8484V30H43.5584V17.418H50.8484V19.47H46.0784ZM64.3845 30H61.8645L56.1585 21.378V30H53.6385V17.418H56.1585L61.8645 26.058V17.418H64.3845V30ZM69.8948 19.47V22.62H74.1248V24.618H69.8948V27.948H74.6648V30H67.3748V17.418H74.6648V19.47H69.8948ZM83.9349 30L81.1629 25.104H79.9749V30H77.4549V17.436H82.1709C83.1429 17.436 83.9709 17.61 84.6549 17.958C85.3389 18.294 85.8489 18.756 86.1849 19.344C86.5329 19.92 86.7069 20.568 86.7069 21.288C86.7069 22.116 86.4669 22.866 85.9869 23.538C85.5069 24.198 84.7929 24.654 83.8449 24.906L86.8509 30H83.9349ZM79.9749 23.214H82.0809C82.7649 23.214 83.2749 23.052 83.6109 22.728C83.9469 22.392 84.1149 21.93 84.1149 21.342C84.1149 20.766 83.9469 20.322 83.6109 20.01C83.2749 19.686 82.7649 19.524 82.0809 19.524H79.9749V23.214ZM97.1901 27.606H92.1861L91.3581 30H88.7121L93.2301 17.418H96.1641L100.682 30H98.0181L97.1901 27.606ZM96.5061 25.59L94.6881 20.334L92.8701 25.59H96.5061ZM109.351 30L106.579 25.104H105.391V30H102.871V17.436H107.587C108.559 17.436 109.387 17.61 110.071 17.958C110.755 18.294 111.265 18.756 111.601 19.344C111.949 19.92 112.123 20.568 112.123 21.288C112.123 22.116 111.883 22.866 111.403 23.538C110.923 24.198 110.209 24.654 109.261 24.906L112.267 30H109.351ZM105.391 23.214H107.497C108.181 23.214 108.691 23.052 109.027 22.728C109.363 22.392 109.531 21.93 109.531 21.342C109.531 20.766 109.363 20.322 109.027 20.01C108.691 19.686 108.181 19.524 107.497 19.524H105.391V23.214ZM127.449 17.436V19.47H122.211V22.692H126.225V24.69H122.211V30H119.691V17.436H127.449ZM132.256 17.436V30H129.736V17.436H132.256ZM141.726 30L138.954 25.104H137.766V30H135.246V17.436H139.962C140.934 17.436 141.762 17.61 142.446 17.958C143.13 18.294 143.64 18.756 143.976 19.344C144.324 19.92 144.498 20.568 144.498 21.288C144.498 22.116 144.258 22.866 143.778 23.538C143.298 24.198 142.584 24.654 141.636 24.906L144.642 30H141.726ZM137.766 23.214H139.872C140.556 23.214 141.066 23.052 141.402 22.728C141.738 22.392 141.906 21.93 141.906 21.342C141.906 20.766 141.738 20.322 141.402 20.01C141.066 19.686 140.556 19.524 139.872 19.524H137.766V23.214ZM160.975 17.436V30H158.455V21.828L155.089 30H153.181L149.797 21.828V30H147.277V17.436H150.139L154.135 26.778L158.131 17.436H160.975ZM171.671 27.606H166.667L165.839 30H163.193L167.711 17.418H170.645L175.163 30H172.499L171.671 27.606ZM170.987 25.59L169.169 20.334L167.351 25.59H170.987Z" fill="white"/>
+                                <path d="M230 25L248 25" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M239 16L239 34" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                            </g>
+                            <defs>
+                                <clipPath id="clip0_9_442">
+                                    <rect width="265" height="50" fill="white"/>
+                                </clipPath>
+                            </defs>
+                        </svg>
+                    </a>
+                </div>
+                <div class="row pb-5">
+                    <div id="embed_letter_pdf" class="col-md-6">
+                        <embed src="{{ url_for('order_pdf_letter', order_id=order_id) }}" type="application/pdf" width="100%" height="700px">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,6 +1,11 @@
 /app/utils/variables.tf
 /app/utils/.terraform
-.idea
+.idea/
 *.pyc
 venv
 .idea/*
+/app/utils/.terraform/
+/app/utils/.terraform.lock.hcl
+/app/utils/.terraform.tfstate.lock.info
+/app/utils/terraform.tfstate
+/app/utils/terraform.tfstate.backup

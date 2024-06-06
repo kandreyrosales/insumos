@@ -20,32 +20,6 @@
             </div>
         </div>
     </div>
-    <div id="signature_response">
-        {% if not user_signature %}
-            {% if message %}
-                <div class="col">
-                    <div class="mb-3">
-                        <span>{{ message }}</span>
-                    </div>
-                </div>
-            {% endif %}
-            <div id='upload_signature_form'>
-                <label for="file" class="col-form-label insumos_form_label">Carga tu firma para la carta aquí:</label>
-                <input class="form-control placeholder_label_insumos mb-2" type='file' name='file' accept="image/*" id="file">
-                <button class="btn btn-primary" hx-post="{{ url_for('upload_signature') }}" hx-encoding='multipart/form-data' hx-include="#file" hx-target="#signature_response" hx-trigger="click" hx-swap="innerHTML">
-                    Guardar firma
-                </button>
-            </div>
-        {% else %}
-            <div class="col-md-6">
-                <span class="insumos_form_label">Firma actual:</span>
-                <div style="width: 70px; height: 70px;">
-                    <img src="{{ url_for('get_image', signature_id=user_signature.id) }}" class="card-img-top" alt="signature_img_{{ user_signature.id }}">
-                </div>
-            </div>
-        {% endif %}
-    </div>
-
     <div>
         <span>Insumos a ordenar</span>
         {% for insumo in insumos %}

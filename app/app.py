@@ -7,7 +7,7 @@ import base64
 
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, send_file, make_response
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, DateTime, String, Integer, Text, Numeric
+from sqlalchemy import Column, DateTime, String, Integer, Text, Numeric, JSON
 from sqlalchemy.orm import relationship
 import boto3
 import jwt
@@ -18,8 +18,10 @@ from xhtml2pdf import pisa
 app = Flask(__name__)
 
 db_host = os.getenv("db_endpoint").split(":")[0]
-db_name = "insumos_db"
-db_user = "insumos_user"
+# db_name = "insumos_db"
+db_name = "insumos"
+# db_user = "insumos_user"
+db_user = "kandreyrosales"
 db_password = os.getenv("db_password")
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{db_user}:{db_password}@{db_host}:5432/{db_name}'
@@ -132,7 +134,8 @@ class Order(db.Model):
     estimated_delivery_date = Column(DateTime, nullable=True)
     last_updated = Column(DateTime, nullable=False, default=datetime.utcnow)
     insumos = relationship('Insumo', backref='order', lazy=True)
-    letter = db.Column(db.LargeBinary, nullable=False)
+    data = Column(JSON)
+    letter = db.Column(db.LargeBinary, nullable=True)
     letter_response = db.Column(db.LargeBinary, nullable=True)
     letter_response_date = Column(DateTime, nullable=True)
     status = db.Column(db.Enum(OrderStatus), default=OrderStatus.CREADA, nullable=False)
@@ -141,6 +144,8 @@ class Order(db.Model):
     doctor_name = db.Column(String(250), nullable=True)
     doctor_position = db.Column(String(250), nullable=True)
     total = db.Column(Numeric, nullable=False)
+    letter_signature = db.Column(db.Text, nullable=True)
+    letter_response_signature = db.Column(db.Text, nullable=True)
 
     def update(self, new_data):
         # Update other fields in self based on new_data
@@ -233,10 +238,10 @@ def initial_data():
                 email=fields[11]
             )
             db.session.add(bayer_user)
-        with open('static/assets/img/bayer_admin_signature.png', 'rb') as f:
-            image_data = f.read()
-            admin_signature = Signature(user_email=ADMIN_EMAIL, signature_image=image_data)
-            db.session.add(admin_signature)
+        # with open('static/assets/img/bayer_admin_signature.png', 'rb') as f:
+        #     image_data = f.read()
+        #     admin_signature = Signature(user_email=ADMIN_EMAIL, signature_image=image_data)
+        #     db.session.add(admin_signature)
         db.session.commit()
     return {"message": "Data inicial cargada!"}
 
@@ -904,61 +909,86 @@ def add_order_record():
                 total_cost += (insumo.unit_cost * quantity_insumo_ordered)
                 insumos_for_order.append(
                     {
+                        "id": insumo.id,
                         "name": name_insumo_ordered,
                         "quantity": quantity_insumo_ordered,
                         "cost": insumo.unit_cost
                     }
                 )
 
-            signature = Signature.query.filter_by(user_email=user_email).first()
-            representante_signature = base64.b64encode(signature.signature_image).decode('utf-8')
+            # signature = Signature.query.filter_by(user_email=user_email).first()
+            # representante_signature = base64.b64encode(signature.signature_image).decode('utf-8')
 
-            pdf_data = generate_letter_for_order(
-                insumos_dict_list=insumos_for_order,
-                medico_solicitante=medico_solicitante,
-                posicion_medico=posicion_medico,
-                nombre_institucion=nombre_institucion,
-                representante_signature=representante_signature
-            )
+            # pdf_data = generate_letter_for_order(
+            #     insumos_dict_list=insumos_for_order,
+            #     medico_solicitante=medico_solicitante,
+            #     posicion_medico=posicion_medico,
+            #     nombre_institucion=nombre_institucion,
+            #     representante_signature=representante_signature
+            # )
             order = Order(
                 user_email=user_email,
-                letter=pdf_data,
                 status=OrderStatus.CREADA,
                 delivery_institute=nombre_institucion,
                 doctor_name=medico_solicitante,
                 doctor_position=posicion_medico,
-                total=total_cost
+                total=total_cost,
+                data=insumos_for_order
             )
             db.session.add(order)
             db.session.commit()
-            message = "Pedido creado exitosamente!"
-            error = False
+            return render_template(
+                'representante/button_go_to_order_detail.html',
+                order_id=order.id
+            )
     except Exception as e:
         message = str(e)
         error = True
-    return render_template("custom_alert_message.html",
-                           message=message,
-                           error=error)
+        return render_template(
+            "custom_alert_message.html",
+            message=message,
+            error=error)
 
 
-@app.route('/show_pdf/<int:order_id>')
+def generate_pdf(html):
+    pdf = BytesIO()
+    pisa_status = pisa.CreatePDF(BytesIO(html.encode('utf-8')), dest=pdf)
+    if pisa_status.err:
+        return None
+    pdf.seek(0)
+    return pdf
+
+
+@app.route('/order_pdf_letter/<int:order_id>')
 @token_required
-def show_pdf(order_id):
+def order_pdf_letter(order_id):
     order = Order.query.get_or_404(order_id)
-    response = make_response(order.letter)
+    letter_html_rendered = render_template(
+        'representante/letter_representante_generate_order.html',
+        actual_date=date.today(),
+        insumos_order=order.data,
+        medico_solicitante=order.doctor_name,
+        posicion_medico=order.doctor_position,
+        nombre_institucion=order.delivery_institute,
+        logo_bayer=get_bayer_logo(),
+        doctor_signature=order.letter_signature if order.letter_signature else None,
+    )
+    # Convertir el HTML a PDF
+    pdf = generate_pdf(letter_html_rendered)
+    if pdf is None:
+        return "Error al generar el PDF", 500
+    response = make_response(pdf.read())
     response.headers['Content-Type'] = 'application/pdf'
-    response.headers['Content-Disposition'] = f'inline; filename=carta_insumo_order_{order_id}.pdf'
+    response.headers['Content-Disposition'] = 'inline; filename=order_detail.pdf'
     return response
 
 
-@app.route('/show_pdf_response_letter/<int:order_id>')
+@app.route('/order_detail/<int:order_id>')
 @token_required
-def show_pdf_response_letter(order_id):
-    order = Order.query.get_or_404(order_id)
-    response = make_response(order.letter_response)
-    response.headers['Content-Type'] = 'application/pdf'
-    response.headers['Content-Disposition'] = f'inline; filename=respuesta_carta_insumo_order_{order_id}.pdf'
-    return response
+def order_detail(order_id):
+    return render_template(
+        'representante/order_detail.html',
+        order_id=order_id)
 
 
 @app.route('/edit_insumo/<int:insumo_id>', methods=["GET", "POST"])
@@ -1065,21 +1095,15 @@ def edit_order(order_id):
 def upload_signature():
     user_email = session.get("user_email")
     try:
-        file = request.files['file']
-        existent_signature = Signature.query.filter_by(user_email=user_email).first()
-        if existent_signature:
-            message = "El usuario ya tiene una firma agregada"
-            return render_template('representante/signature_form.html',
-                                   user_signature=existent_signature,
-                                   message=message)
-        else:
-            signature = Signature(user_email=user_email, signature_image=file.read())
-            db.session.add(signature)
-            db.session.commit()
-            message = "Firma agregada correctamente!"
-            return render_template('representante/signature_form.html',
-                                   user_signature=signature,
-                                   message=message)
+        data_from_request = [key for key in request.form.keys()][0].split("_")
+        order_id = data_from_request[1]
+        file = request.form[f'signature_{order_id}']
+
+        order = Order.query.get_or_404(order_id)
+        order.letter_signature = file
+        db.session.commit()
+        return render_template("representante/embed_letter.html",
+                               order_id=order_id)
     except Exception as e:
         message = f"Ha ocurrido un error cargando la firma: Debes cargar una firma válida"
     return render_template('representante/signature_form.html',
