@@ -18,10 +18,10 @@ from xhtml2pdf import pisa
 app = Flask(__name__)
 
 db_host = os.getenv("db_endpoint").split(":")[0]
-db_name = "insumos_db"
-# db_name = "insumos"
-db_user = "insumos_user"
-# db_user = "kandreyrosales"
+# db_name = "insumos_db"
+db_name = "insumos"
+# db_user = "insumos_user"
+db_user = "kandreyrosales"
 db_password = os.getenv("db_password")
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{db_user}:{db_password}@{db_host}:5432/{db_name}'

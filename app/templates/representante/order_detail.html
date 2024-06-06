@@ -5,7 +5,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <span class="modal-add-insumos-title w-100 text-center" id="generateSignatureModalLabel">Firma carta de respuesta</span>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" id="close_btn_generate_signature_modal" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="container-fluid" id="modal_generate_signature_container">
@@ -53,7 +53,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <span class="modal-add-insumos-title w-100 text-center" id="generateSignatureResponseLetterModalLabel">Firma aquí</span>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" id="close_btn_generate_signature_response_modal" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="container-fluid" id="modal_generate_signature_container">
@@ -97,6 +97,7 @@
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.5.3/signature_pad.min.js"></script>
     <script>
+
         var canvas = document.getElementById('signatureCanvas');
         var signaturePad = new SignaturePad(canvas);
         function captureSignature() {
@@ -109,6 +110,7 @@
             return canvas_response_letter.toDataURL();
         }
 
+
         // Event listener to save signature
         const saveSignatureBtn = document.querySelector('#btn_save_signature_letter');
         saveSignatureBtn.addEventListener('click', () => {
@@ -118,6 +120,7 @@
             input.name = 'signature_{{ order_id }}';
             input.value = signatureData;
             saveSignatureBtn.insertAdjacentElement('beforebegin', input);
+            document.getElementById('close_btn_generate_signature_modal').click();
         });
 
         // Event listener to save signature
@@ -129,6 +132,7 @@
             input.name = 'signatureresponse_{{ order_id }}';
             input.value = signatureDataResponseLetter;
             saveSignatureResponseLetterBtn.insertAdjacentElement('beforebegin', input);
+            document.getElementById('close_btn_generate_signature_response_modal').click();
         });
     </script>
 
