@@ -45,6 +45,9 @@ SEND_RESET_PASSWORD_LINK = 'login/send_reset_password_link.html'
 
 ADMIN_EMAIL = 'lilian.heredia@xaldigital.com'
 
+TYPE_LETTER_RESPONSE = 'letter_response'
+TYPE_LETTER = 'letter'
+
 # boto3 clients
 cognito_client = boto3.client('cognito-idp',
                               region_name=AWS_REGION,
@@ -784,7 +787,9 @@ def orders_representante_list():
         for order in orders:
             carta_respuesta = ""
             if order.letter_response:
-                carta_respuesta = url_for("show_pdf_response_letter", order_id=order.id)
+                carta_respuesta = url_for("order_pdf_letter",
+                                          order_id=order.id,
+                                          type_letter=TYPE_LETTER)
             new_dict_orders_list_representante.append({
                 "id": order.id,
                 "representante": bayer_user.name,
@@ -795,7 +800,9 @@ def orders_representante_list():
                 "fecha_entrega": datetime.strftime(order.estimated_delivery_date, "%d-%m-%Y")
                 if order.estimated_delivery_date else "",
                 "estado": order.status.value,
-                "carta_representante": url_for("show_pdf", order_id=order.id),
+                "carta_representante": url_for("order_pdf_letter",
+                                               order_id=order.id,
+                                               type_letter=TYPE_LETTER_RESPONSE),
                 "carta_respuesta": carta_respuesta,
             })
         return render_template('representante/orders_table_representante.html',
@@ -916,16 +923,6 @@ def add_order_record():
                     }
                 )
 
-            # signature = Signature.query.filter_by(user_email=user_email).first()
-            # representante_signature = base64.b64encode(signature.signature_image).decode('utf-8')
-
-            # pdf_data = generate_letter_for_order(
-            #     insumos_dict_list=insumos_for_order,
-            #     medico_solicitante=medico_solicitante,
-            #     posicion_medico=posicion_medico,
-            #     nombre_institucion=nombre_institucion,
-            #     representante_signature=representante_signature
-            # )
             order = Order(
                 user_email=user_email,
                 status=OrderStatus.CREADA,
@@ -959,27 +956,45 @@ def generate_pdf(html):
     return pdf
 
 
-@app.route('/order_pdf_letter/<int:order_id>')
+@app.route('/order_pdf_letter/<int:order_id>/<type_letter>')
 @token_required
-def order_pdf_letter(order_id):
+def order_pdf_letter(order_id, type_letter):
     order = Order.query.get_or_404(order_id)
-    letter_html_rendered = render_template(
-        'representante/letter_representante_generate_order.html',
-        actual_date=date.today(),
-        insumos_order=order.data,
-        medico_solicitante=order.doctor_name,
-        posicion_medico=order.doctor_position,
-        nombre_institucion=order.delivery_institute,
-        logo_bayer=get_bayer_logo(),
-        doctor_signature=order.letter_signature if order.letter_signature else None,
-    )
+    if type_letter == TYPE_LETTER_RESPONSE:
+        doctor_signature = order.letter_response_signature if order.letter_response_signature else None
+        representante = BayerUser.query.filter_by(email=session.get("user_email")).first()
+        letter_html_rendered = render_template(
+            'representante/letter_representante_response_generate_order.html',
+            order_id=order_id,
+            actual_date=date.today(),
+            medico_solicitante=order.doctor_name,
+            posicion_medico=order.doctor_position,
+            nombre_institucion=order.delivery_institute,
+            doctor_signature=doctor_signature,
+            nombre_representante=representante.name,
+            logo_bayer=get_bayer_logo()
+        )
+        file_pdf_name = f'inline; filename=carta_respuesta_pedido_{order_id}.pdf'
+    else:
+        doctor_signature = order.letter_signature if order.letter_signature else None
+        letter_html_rendered = render_template(
+            'representante/letter_representante_generate_order.html',
+            actual_date=date.today(),
+            insumos_order=order.data,
+            medico_solicitante=order.doctor_name,
+            posicion_medico=order.doctor_position,
+            nombre_institucion=order.delivery_institute,
+            logo_bayer=get_bayer_logo(),
+            doctor_signature=doctor_signature
+        )
+        file_pdf_name = f'inline; filename=carta_solicitud_pedido_{order_id}.pdf'
     # Convertir el HTML a PDF
     pdf = generate_pdf(letter_html_rendered)
     if pdf is None:
         return "Error al generar el PDF", 500
     response = make_response(pdf.read())
     response.headers['Content-Type'] = 'application/pdf'
-    response.headers['Content-Disposition'] = 'inline; filename=order_detail.pdf'
+    response.headers['Content-Disposition'] = file_pdf_name
     return response
 
 
@@ -988,7 +1003,8 @@ def order_pdf_letter(order_id):
 def order_detail(order_id):
     return render_template(
         'representante/order_detail.html',
-        order_id=order_id)
+        order_id=order_id,
+    )
 
 
 @app.route('/edit_insumo/<int:insumo_id>', methods=["GET", "POST"])
@@ -1093,46 +1109,30 @@ def edit_order(order_id):
 @app.route('/upload_signature', methods=['POST'])
 @token_required
 def upload_signature():
-    user_email = session.get("user_email")
     try:
         data_from_request = [key for key in request.form.keys()][0].split("_")
         order_id = data_from_request[1]
-        file = request.form[f'signature_{order_id}']
-
         order = Order.query.get_or_404(order_id)
-        order.letter_signature = file
+        if request.form.get(f'signature_{order_id}'):
+            order.letter_signature = request.form[f'signature_{order_id}']
+        else:
+            order.letter_response_signature = request.form[f'signatureresponse_{order_id}']
+            order.status = OrderStatus.EN_CAMINO
         db.session.commit()
-        return render_template("representante/embed_letter.html",
-                               order_id=order_id)
+        return redirect(url_for('get_letter_html', order_id=order_id))
     except Exception as e:
-        message = f"Ha ocurrido un error cargando la firma: Debes cargar una firma válida"
-    return render_template('representante/signature_form.html',
-                           message=message,
-                           user_signature=None)
+        return f"Ha ocurrido un error cargando la firma: {str(e)}"
 
 
-def generate_letter_for_order(
-        insumos_dict_list: list,
-        medico_solicitante: str,
-        posicion_medico: str,
-        nombre_institucion: str,
-        representante_signature
-):
-    letter_html_rendered = render_template(
-        'representante/letter_representante_generate_order.html',
-        actual_date=date.today(),
-        insumos_order=insumos_dict_list,
-        medico_solicitante=medico_solicitante,
-        posicion_medico=posicion_medico,
-        nombre_institucion=nombre_institucion,
-        representante_signature=representante_signature,
-        logo_bayer=get_bayer_logo()
+@app.route('/get_letter_html/<int:order_id>', methods=["GET"])
+def get_letter_html(order_id):
+    order = Order.query.get_or_404(order_id)
+    return render_template(
+        "representante/embed_letter.html",
+        order_id=order_id,
+        order_letter_signature=True if order.letter_signature else False,
+        order_letter_response_signature=True if order.letter_response_signature else False
     )
-    pdf = BytesIO()
-    pisa_status = pisa.CreatePDF(BytesIO(letter_html_rendered.encode('utf-8')), dest=pdf)
-    if pisa_status.err:
-        raise ValueError(pisa_status.err)
-    return pdf.getvalue()
 
 
 def get_bayer_logo():
@@ -1142,30 +1142,3 @@ def get_bayer_logo():
         encoded_image = base64.b64encode(image_file.read()).decode('utf-8')
     image_data = f'data:image/png;base64,{encoded_image}'
     return image_data
-
-
-def generate_letter_response(
-        order_id: int,
-        medico_solicitante: str,
-        posicion_medico: str,
-        nombre_institucion: str,
-        nombre_representante: str,
-        representante_signature
-
-):
-    letter_html_response_rendered = render_template(
-        'admin/letter_response_admin.html',
-        order_id=order_id,
-        actual_date=date.today(),
-        medico_solicitante=medico_solicitante,
-        posicion_medico=posicion_medico,
-        nombre_institucion=nombre_institucion,
-        representante_signature=representante_signature,
-        nombre_representante=nombre_representante,
-        logo_bayer=get_bayer_logo()
-    )
-    pdf = BytesIO()
-    pisa_status = pisa.CreatePDF(BytesIO(letter_html_response_rendered.encode('utf-8')), dest=pdf)
-    if pisa_status.err:
-        raise ValueError(pisa_status.err)
-    return pdf.getvalue()

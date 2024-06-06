@@ -44,8 +44,12 @@
             color: white;
         }
         img {
-            max-width: 100px;
-            max-height: 100px;
+            width: 200px;
+            height: 200px;
+        }
+        .logo{
+            width: 50px;
+            height: 50px;
         }
     </style>
 </head>
@@ -54,7 +58,7 @@
 <div class="container">
     <div class="row">
         <div class="col">
-            <img src="{{ logo_bayer }}" alt="Logo Bayer">
+            <img src="{{ logo_bayer }}" alt="Logo Bayer" class="logo">
         </div>
     </div>
     <div class="row">
@@ -86,9 +90,11 @@
     <div class="row">
         <span>En este acto expresamente acepto que la firma electrónica anterior sustituye a la firma autógrafa, por lo que reconozco su autenticidad, veracidad y origen de la misma, en términos de la legislación aplican</span>
     </div>
-    <div class="row">
-        <img src="data:image/png;base64,{{ representante_signature }}">
-    </div>
+    {% if doctor_signature %}
+        <div class="row" >
+            <img src="{{ doctor_signature }}">
+        </div>
+    {% endif %}
 
 </div>
 
