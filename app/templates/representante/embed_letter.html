@@ -1,7 +1,7 @@
 <div class="col me-3">
     <div class="row mb-3">
         <div class="col d-flex align-items-center justify-content-between">
-            <span>Carta solicitud de insumos</span>
+            <span class="title_letters">Carta solicitud de insumos</span>
             <button class="btn" style="display: flex;align-items: center;" id="a_svg_generate_signature" data-bs-toggle="modal" data-bs-target="#generate_signature_modal" {% if order_letter_signature %} disabled="true" {% endif %}>
                 {% if not order_letter_signature %}
                     <svg width="265" height="50" viewBox="0 0 265 50" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -46,7 +46,7 @@
 <div class="col me-3">
     <div class="row mb-3">
         <div class="col d-flex align-items-center justify-content-between">
-            <span>Carta respuesta</span>
+            <span class="title_letters">Carta respuesta</span>
             <button class="btn" style="display: flex;align-items: center;" id="a_svg_generate_signature_letter" data-bs-toggle="modal" data-bs-target="#generate_signature_modal_response_letter" {% if not order_letter_signature %} disabled="true" {% endif %}>
                 {% if not order_letter_signature or (order_letter_signature and order_letter_response_signature) %}
                     <svg width="265" height="50" viewBox="0 0 265 50" fill="none" xmlns="http://www.w3.org/2000/svg">

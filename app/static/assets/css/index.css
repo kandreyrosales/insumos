@@ -297,3 +297,10 @@ td, th {
     padding: 0.25rem 1rem; /* Adjust padding as needed */
 }
 
+.title_letters{
+    font-family: Poppins;
+    font-size: 22px;
+    font-weight: 500;
+    text-align: left;
+}
+
