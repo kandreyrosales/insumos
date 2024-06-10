@@ -11,11 +11,34 @@
 
 <nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="collapse navbar-collapse d-grid d-flex justify-content-between" id="navbarSupportedContent">
             <div class="navbar-brand">
-                <button class="btn btn-light btn-lg border-0"  style="background-color: transparent;color: white;font-size: 35px" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
+                <a class="btn btn-light btn-lg border-0" style="background-color: transparent;color: white;font-size: 35px" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
                     <i class="bi bi-list"></i>
-                </button>
+                </a>
+            </div>
+            <div class="row">
+                <div class="col-auto">
+                    <svg width="47" height="47" viewBox="0 0 47 47" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="23.5" cy="23.5" r="23.5" fill="#BFDCE0"/>
+                        <mask id="mask0_31_1641" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="47" height="47">
+                            <circle cx="23.5" cy="23.5" r="23.5" fill="#84A0C1"/>
+                        </mask>
+                        <g mask="url(#mask0_31_1641)">
+                            <ellipse cx="23.5001" cy="41.36" rx="17.86" ry="10.34" fill="#274185"/>
+                        </g>
+                        <circle cx="23.5" cy="19.975" r="8.46" fill="#274185"/>
+                    </svg>
+
+                </div>
+                <div class="col">
+                    <div class="row">
+                        <span id="name_profile">Usuario</span>
+                    </div>
+                    <div class="row">
+                        <span id="name_profile">{{ session.user_email }}</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -32,8 +55,8 @@
     <div class="offcanvas-body" style="padding-top: 0">
         <ul class="navbar-nav">
             <li class="nav-item">
-                <a href={% if admin_user %}"{{ url_for('index_admin') }}"{% else %}{{ url_for('representante') }}{% endif %} class="btn btn-lg border-0 custom_btn_navbar custom_btn_navbar_resumen" id="btn-executive-page">
-                    <svg id="icon_resumen_ejecutivo" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <a href={% if admin_user %}"{{ url_for('index_admin') }}"{% else %}{{ url_for('representante') }}{% endif %} class="btn btn-lg border-0 custom_btn_navbar custom_btn_navbar_resumen">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect width="24" height="24" fill="none"/>
                         <rect class="rect_resumen_icon" x="2" y="6" width="20" height="16" rx="5" stroke="#231F20" stroke-width="1.5"/>
                         <path class="rect_resumen_icon" d="M19 6.5V6.5C19 4.17692 16.8678 2.43898 14.5924 2.90744L5.99174 4.67817C3.66769 5.15665 2 7.20267 2 9.57546L2 13" stroke="#231F20" stroke-width="1.5"/>
@@ -44,8 +67,8 @@
                     <span>Insumos</span>
                 </a>
             </li>
-            <li class="nav-item"><a href={% if admin_user %}"{{ url_for('pedidos') }}"{% else %}{{ url_for('pedidos_representante') }}{% endif %} class="btn btn-lg border-0 custom_btn_navbar">
-                <svg id="icon_conciliaciones" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <li class="nav-item"><a href={% if admin_user %}"{{ url_for('pedidos') }}"{% else %}{{ url_for('pedidos_representante') }}{% endif %} class="btn btn-lg border-0 custom_btn_navbar custom_btn_navbar_resumen">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect class="rect_conciliaciones_icon" x="2" y="2" width="20" height="20" rx="5" stroke="#231F20" stroke-width="1.5"/>
                     <path class="rect_conciliaciones_icon" d="M8 17L8 14" stroke="#231F20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                     <path class="rect_conciliaciones_icon" d="M12 17L12 7" stroke="#231F20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>

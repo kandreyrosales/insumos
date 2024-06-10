@@ -51,6 +51,13 @@
     color: #FFFFFF;
 }
 
+#name_profile{
+    font-family: Poppins;
+    font-size: 14px;
+    font-weight: 500;
+    color: white;
+}
+
 
 .card-title{
     font-family: Poppins;
