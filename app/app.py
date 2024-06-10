@@ -340,7 +340,8 @@ def requires_representante_email():
     def decorator(func):
         @wraps(func)
         def decorated_function(*args, **kwargs):
-            if not BayerUser.query.filter_by(email=session.get('user_email')).first():
+            if (not BayerUser.query.filter_by(email=session.get('user_email')).first() or
+                    session.get('user_email') in ADMIN_EMAILS):
                 return abort(404)
             return func(*args, **kwargs)
 
