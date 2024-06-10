@@ -332,6 +332,17 @@ def requires_admin_email():
             if session.get('user_email') not in ADMIN_EMAILS:
                 return abort(404)
             return func(*args, **kwargs)
+        return decorated_function
+    return decorator
+
+
+def requires_representante_email():
+    def decorator(func):
+        @wraps(func)
+        def decorated_function(*args, **kwargs):
+            if not BayerUser.query.filter_by(email=session.get('user_email')).first():
+                return abort(404)
+            return func(*args, **kwargs)
 
         return decorated_function
 
@@ -578,6 +589,7 @@ def index_admin():
 
 
 @app.route('/add_insumos_form', methods=["GET"])
+@requires_admin_email()
 @token_required
 def add_insumos_form():
     vendors = Vendor.query.all()
@@ -585,6 +597,7 @@ def add_insumos_form():
                            vendors=vendors)
 
 
+@requires_representante_email()
 @app.route('/representante', methods=["GET"])
 @token_required
 def representante():
@@ -761,12 +774,14 @@ def pedidos():
 
 @app.route('/pedidos_representante', methods=["GET"])
 @token_required
+@requires_representante_email()
 def pedidos_representante():
     return render_template('representante/orders_representante.html',
                            user_admin=False)
 
 
 @app.route('/api/orders_representante', methods=["GET"])
+@requires_representante_email()
 @token_required
 def orders_representante_list():
     email = session.get("user_email")
@@ -837,6 +852,7 @@ def get_orders_to_delete_html():
             'custom_alert_message.html',
             message='Pedidos cancelados!'
         )
+
 
 def filter_vendor(vendor_id: int):
     filtered_vendor = Vendor.query.filter_by(id=vendor_id).all()
