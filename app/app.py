@@ -330,7 +330,7 @@ def requires_admin_email():
         @wraps(func)
         def decorated_function(*args, **kwargs):
             if session.get('user_email') in ADMIN_EMAILS:
-                return redirect(url_for('index_admin'))
+                return redirect(url_for('pedidos'))
             return func(*args, **kwargs)
 
         return decorated_function
