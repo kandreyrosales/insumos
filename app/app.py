@@ -18,10 +18,10 @@ from xhtml2pdf import pisa
 app = Flask(__name__)
 
 db_host = os.getenv("db_endpoint").split(":")[0]
-db_name = "insumos_db"
-# db_name = "insumos"
-db_user = "insumos_user"
-# db_user = "kandreyrosales"
+# db_name = "insumos_db"
+db_name = "insumos"
+# db_user = "insumos_user"
+db_user = "kandreyrosales"
 db_password = os.getenv("db_password")
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{db_user}:{db_password}@{db_host}:5432/{db_name}'
@@ -330,7 +330,7 @@ def requires_admin_email():
         @wraps(func)
         def decorated_function(*args, **kwargs):
             if session.get('user_email') not in ADMIN_EMAILS:
-                return abort(404)
+                return redirect(url_for('representante'))
             return func(*args, **kwargs)
         return decorated_function
     return decorator
@@ -340,6 +340,8 @@ def requires_representante_email():
     def decorator(func):
         @wraps(func)
         def decorated_function(*args, **kwargs):
+            if session.get('user_email') in ADMIN_EMAILS:
+                return redirect(url_for('index_admin'))
             if (not BayerUser.query.filter_by(email=session.get('user_email')).first() or
                     session.get('user_email') in ADMIN_EMAILS):
                 return abort(404)
