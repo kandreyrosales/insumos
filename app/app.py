@@ -590,7 +590,6 @@ def index_admin():
 
 
 @app.route('/add_insumos_form', methods=["GET"])
-@requires_admin_email()
 @token_required
 def add_insumos_form():
     vendors = Vendor.query.all()
@@ -752,11 +751,13 @@ def search_insumos_representante():
 
 @app.route('/api/insumos_representante', methods=["GET"])
 @token_required
+@requires_representante_email()
 def insumos_representante_list():
     with app.app_context():
         page = request.args.get('page', 1, type=int)
         per_page = 10  # Number of records per page
-        pagination = Insumo.query.order_by(Insumo.last_updated.desc()).paginate(page=page, per_page=per_page, max_per_page=10, count=True, error_out=False)
+        pagination = Insumo.query.order_by(Insumo.last_updated.desc()).paginate(
+            page=page, per_page=per_page, max_per_page=10, count=True, error_out=False)
         insumos = pagination.items
         return render_template('representante/insumos_table_representante.html',
                                insumos=insumos,
