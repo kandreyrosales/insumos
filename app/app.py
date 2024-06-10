@@ -783,8 +783,8 @@ def pedidos_representante():
 
 
 @app.route('/api/orders_representante', methods=["GET"])
-@requires_representante_email()
 @token_required
+@requires_representante_email()
 def orders_representante_list():
     email = session.get("user_email")
     with app.app_context():
@@ -1007,6 +1007,7 @@ def order_pdf_letter(order_id, type_letter):
 
 @app.route('/order_detail/<int:order_id>')
 @token_required
+@requires_representante_email()
 def order_detail(order_id):
     return render_template(
         'representante/order_detail.html',
