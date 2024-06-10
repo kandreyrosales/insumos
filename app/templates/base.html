@@ -33,10 +33,10 @@
                 </div>
                 <div class="col">
                     <div class="row">
-                        <span id="name_profile">Usuario</span>
+                        <span class="name_profile">{% if admin_user %}Administrador{% else %}Representante{% endif %}</span>
                     </div>
                     <div class="row">
-                        <span id="name_profile">{{ session.user_email }}</span>
+                        <span class="name_profile">{{ session.user_email }}</span>
                     </div>
                 </div>
             </div>
