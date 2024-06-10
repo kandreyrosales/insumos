@@ -5,7 +5,7 @@ from enum import Enum
 from io import BytesIO
 import base64
 
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify, send_file, make_response
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, send_file, make_response, abort
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, DateTime, String, Integer, Text, Numeric, JSON
 from sqlalchemy.orm import relationship
@@ -329,8 +329,8 @@ def requires_admin_email():
     def decorator(func):
         @wraps(func)
         def decorated_function(*args, **kwargs):
-            if session.get('user_email') in ADMIN_EMAILS:
-                return redirect(url_for('pedidos'))
+            if session.get('user_email') not in ADMIN_EMAILS:
+                return abort(404)
             return func(*args, **kwargs)
 
         return decorated_function
