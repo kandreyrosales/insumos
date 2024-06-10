@@ -598,9 +598,10 @@ def add_insumos_form():
                            vendors=vendors)
 
 
-@requires_representante_email()
+
 @app.route('/representante', methods=["GET"])
 @token_required
+@requires_representante_email()
 def representante():
     return render_template('representante/representante_index.html', admin_user=False)
 
