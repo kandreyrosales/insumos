@@ -350,7 +350,7 @@ def requires_representante_email():
     return decorator
 
 
-@app.route('/login_representante', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login_representante():
     """
         Accessing with Cognito using username and password.
