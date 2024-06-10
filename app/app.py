@@ -396,7 +396,7 @@ def login_representante():
         )
 
 
-@app.route('/registro_representante', methods=['GET', 'POST'])
+@app.route('/registro', methods=['GET', 'POST'])
 def registro_representante():
     if request.method == 'POST':
         username = request.form['username']
