@@ -1034,7 +1034,6 @@ def order_pdf_letter(order_id, type_letter):
 
 @app.route('/order_detail/<int:order_id>')
 @token_required
-@requires_representante_email()
 def order_detail(order_id):
     return render_template(
         'representante/order_detail.html',

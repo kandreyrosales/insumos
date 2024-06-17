@@ -11,6 +11,7 @@
             <th>Fecha del Pedido</th>
             <th>Fecha entrega</th>
             <th>Estado</th>
+            <th>Cartas</th>
             <th>Acción</th>
 
         </tr>
@@ -30,6 +31,14 @@
                     <div class="d-flex align-items-center">
                         <button type="button" class="btn p-1 rounded-circle me-2" style="background-color: {% if order.estado == 'Entregado' %}#118632{% elif order.estado == 'Cancelado' %}#D71A1AF2{% elif order.estado == 'En camino' %}#FF8832{% elif order.estado == 'Creado' %}blue{% else %}black{% endif %}"></button>
                         <span><b>{{ order.estado }}</b></span>
+                    </div>
+                </td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19.7633 12.1603L14.9046 17.019C13.6335 18.2901 11.5726 18.2901 10.3015 17.019V17.019C9.03042 15.748 9.03043 13.6871 10.3015 12.416L16.1832 6.53435C17.0306 5.68695 18.4045 5.68695 19.2519 6.53435V6.53435C20.0993 7.38174 20.0993 8.75564 19.2519 9.60304L13.2972 15.5578C12.8735 15.9815 12.1865 15.9815 11.7628 15.5578V15.5578C11.3391 15.1341 11.3391 14.4471 11.7628 14.0234L16.6946 9.09159" stroke="#2B3F6C" stroke-linecap="round"/>
+                        </svg>
+                        <a href="{{ url_for('order_detail', order_id=order.id) }}">Cartas</a>
                     </div>
                 </td>
                 <td>
