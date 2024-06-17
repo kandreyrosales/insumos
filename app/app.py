@@ -658,14 +658,19 @@ def search_query_insumos(query, page, per_page):
 
 
 def search_query_orders_admin(query, page, per_page, field):
+    """
+    Function for Filtering all the status except orders with status CREADA
+    """
     if query:
         if field == 'status':
             if query == 'todos':
-                return Order.query.order_by(Order.id.desc()).paginate(
+                # Construcción de la consulta con el filtro para excluir el estado 'CREADA'
+                query_not_created = Order.query.filter(Order.status != OrderStatus.CREADA).order_by(Order.id.desc())
+                return query_not_created.paginate(
                     page=page, per_page=per_page, max_per_page=10, count=True, error_out=False)
             else:
                 orders = (
-                    Order.query.filter(Order.status == query)
+                    Order.query.filter(Order.status == query).filter(Order.status != OrderStatus.CREADA)
                     .order_by(Order.id.desc())
                     .paginate(page=page, per_page=per_page, max_per_page=10, count=True, error_out=False)
                 )
@@ -674,15 +679,15 @@ def search_query_orders_admin(query, page, per_page, field):
                 BayerUser.name.ilike(f'%{query}%')).all()
             emails = [email[0] for email in email_tuples]
             orders = (
-                Order.query.filter(Order.user_email.in_(emails))
+                Order.query.filter(Order.user_email.in_(emails)).filter(Order.status != OrderStatus.CREADA)
                 .order_by(Order.id.desc())
                 .paginate(page=page, per_page=per_page, max_per_page=10, count=True, error_out=False)
             )
         else:
-            return Order.query.order_by(Order.id.desc()).paginate(
+            return Order.query.filter(Order.status != OrderStatus.CREADA).order_by(Order.id.desc()).paginate(
                 page=page, per_page=per_page, max_per_page=10, count=True, error_out=False)
     else:
-        return Order.query.order_by(Order.id.desc()).paginate(
+        return Order.query.filter(Order.status != OrderStatus.CREADA).order_by(Order.id.desc()).paginate(
             page=page, per_page=per_page, max_per_page=10, count=True, error_out=False)
     return orders
 
@@ -702,6 +707,9 @@ def search_insumos():
 @token_required
 @requires_admin_email()
 def search_orders_admin():
+    """
+    Filtering all the status except orders with status CREADA
+    """
     query_representante_name = request.args.get('query_representante_name', '')
     query_status = request.args.get('query_status', '')
     page = request.args.get('page', 1, type=int)
@@ -715,9 +723,12 @@ def search_orders_admin():
                                                per_page=per_page, page=page,
                                                field='status')
     else:
-        pagination = Order.query.paginate(page=page,
-                                          per_page=per_page, max_per_page=10,
-                                          count=True, error_out=False)
+        pagination = Order.query.filter(
+            Order.status != OrderStatus.CREADA).paginate(
+            page=page,
+            per_page=per_page, max_per_page=10,
+            count=True,
+            error_out=False)
     new_dict_orders_list = []
     for order in pagination.items:
         bayer_user = BayerUser.query.filter_by(email=order.user_email).first()
@@ -728,8 +739,9 @@ def search_orders_admin():
             "customer_team": bayer_user.customer_team,
             "total": order.total,
             "fecha_pedido": order.creation_date,
-            "fecha_entrega": datetime.strftime(order.estimated_delivery_date,
-                                               "%d-%m-%Y") if order.estimated_delivery_date else "",
+            "fecha_entrega": datetime.strftime(
+                order.estimated_delivery_date,
+                "%d-%m-%Y") if order.estimated_delivery_date else "",
             "estado": order.status.value
         })
     return render_template(
@@ -774,7 +786,7 @@ def pedidos():
     return render_template(
         'admin/orders_admin.html',
         admin_user=True,
-        statuses=[status for status in OrderStatus]
+        statuses=[status for status in OrderStatus if status != OrderStatus.CREADA]
     )
 
 
@@ -858,6 +870,17 @@ def get_orders_to_delete_html():
             'custom_alert_message.html',
             message='Pedidos cancelados!'
         )
+
+
+@app.route('/api/cancel_order', methods=["POST"])
+@token_required
+@requires_representante_email()
+def cancel_order():
+    order_id = request.args.get('order_id')
+    order = Order.query.get_or_404(order_id)
+    order.status = OrderStatus.CANCELADO
+    db.session.commit()
+    return jsonify({"Pedido cancelado!"})
 
 
 def filter_vendor(vendor_id: int):
@@ -996,7 +1019,7 @@ def order_pdf_letter(order_id, type_letter):
             posicion_medico=order.doctor_position,
             nombre_institucion=order.delivery_institute,
             logo_bayer=get_bayer_logo(),
-            doctor_signature=doctor_signature
+            doctor_signature=doctor_signature,
         )
         file_pdf_name = f'inline; filename=carta_solicitud_pedido_{order_id}.pdf'
     # Convertir el HTML a PDF
@@ -1071,6 +1094,7 @@ def edit_order(order_id):
     try:
         with app.app_context():
             order = Order.query.get(order_id)
+            general_statuses_for_admin = [status for status in OrderStatus if status != OrderStatus.CREADA]
             if request.method == "POST":
                 order.estimated_delivery_date = estimated_delivery_date
                 order.status = status
@@ -1080,7 +1104,7 @@ def edit_order(order_id):
                     message="Pedido actualizado correctamente!",
                     order_id=order_id,
                     estimated_delivery_date=order.estimated_delivery_date,
-                    statuses=[status for status in OrderStatus],
+                    statuses=general_statuses_for_admin,
                     actual_status=order.status.value,
                     error=False)
             else:
@@ -1089,7 +1113,7 @@ def edit_order(order_id):
                     order_id=order_id,
                     estimated_delivery_date=order.estimated_delivery_date.strftime("%Y-%m-%d")
                     if order.estimated_delivery_date else '',
-                    statuses=[status for status in OrderStatus],
+                    statuses=general_statuses_for_admin,
                     actual_status=order.status.value,
                     error=False
                 )
@@ -1111,9 +1135,10 @@ def upload_signature():
         order = Order.query.get_or_404(order_id)
         if request.form.get(f'signature_{order_id}'):
             order.letter_signature = request.form[f'signature_{order_id}']
+            order.status = OrderStatus.EN_CAMINO
         else:
             order.letter_response_signature = request.form[f'signatureresponse_{order_id}']
-            order.status = OrderStatus.EN_CAMINO
+            order.status = OrderStatus.ENTREGADO
         db.session.commit()
         return redirect(url_for('get_letter_html', order_id=order_id))
     except Exception as e:
@@ -1138,3 +1163,11 @@ def get_bayer_logo():
         encoded_image = base64.b64encode(image_file.read()).decode('utf-8')
     image_data = f'data:image/png;base64,{encoded_image}'
     return image_data
+
+
+@app.route('/delete_insumo/<int:insumo_id>', methods=["DELETE"])
+def delete_insumo(insumo_id):
+    insumo = Insumo.query.get_or_404(insumo_id)
+    db.session.delete(insumo)
+    db.session.commit()
+    return jsonify({"Insumo eliminado!"}), 201
