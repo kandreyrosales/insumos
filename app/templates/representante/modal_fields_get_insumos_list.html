@@ -1,21 +1,27 @@
 <form id="external_form_create_order" hx-post="{{ url_for('add_order_record') }}" hx-target="#order_creation_response" hx-trigger="submit" hx-swap="innerHTML">
     <div class="row">
-        <div class="col">
+        <div class="col-md-3">
             <div class="mb-3">
                 <label for="medico_solicitante" class="col-form-label insumos_form_label">Médico Solicitante</label>
                 <input type="text" class="form-control placeholder_label_insumos" id="medico_solicitante" name="medico_solicitante" placeholder="Nombre del médico" required>
             </div>
         </div>
-        <div class="col">
+        <div class="col-md-3">
             <div class="mb-3">
                 <label for="nombre_institucion" class="col-form-label insumos_form_label">Nombre de la Institución</label>
                 <input type="text" class="form-control placeholder_label_insumos" id="nombre_institucion" name="nombre_institucion" placeholder="Nombre la Institución" required>
             </div>
         </div>
-        <div class="col">
+        <div class="col-md-2">
             <div class="mb-3">
                 <label for="posicion_medico" class="col-form-label insumos_form_label">Posición del Médico</label>
-                <input type="text" class="form-control placeholder_label_insumos" id="posicion_medico" name="posicion_medico" placeholder="Posición del médico" required>
+                <input type="text" class="form-control placeholder_label_insumos" id="posicion_medico" name="posicion_medico" placeholder="Posición" required>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="mb-3">
+                <label for="direccion_entrega" class="col-form-label insumos_form_label">Dirección de Entrega</label>
+                <input type="text" class="form-control placeholder_label_insumos" id="direccion_entrega" name="direccion_entrega" placeholder="Dirección de Entrega" required>
             </div>
         </div>
     </div>

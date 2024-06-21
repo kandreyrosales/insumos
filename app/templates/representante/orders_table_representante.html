@@ -10,6 +10,7 @@
             <th>Total</th>
             <th>Fecha del Pedido</th>
             <th>Fecha entrega</th>
+            <th>Dirección de entrega</th>
             <th>Estado</th>
             <th>Cartas</th>
             <th>Cancelar</th>
@@ -27,6 +28,7 @@
                 <td>${{ order.total }}</td>
                 <td>{{ order.fecha_pedido.strftime('%d-%m-%Y') }}</td>
                 <td>{{ order.fecha_entrega }}</td>
+                <td>{{ order.direccion_entrega }}</td>
                 <td style="color: {% if order.estado == 'Entregado' %}#118632{% elif order.estado == 'Cancelado' %}#D71A1AF2{% elif order.estado == 'En camino' %}#FF8832{% elif order.estado == 'Creado' %}blue{% else %}black{% endif %}">
                     <div class="d-flex align-items-center">
                         <button type="button" class="btn p-1 rounded-circle me-2" style="background-color: {% if order.estado == 'Entregado' %}#118632{% elif order.estado == 'Cancelado' %}#D71A1AF2{% elif order.estado == 'En camino' %}#FF8832{% elif order.estado == 'Creado' %}blue{% else %}black{% endif %}"></button>
@@ -41,25 +43,30 @@
                         <a href="{{ url_for('order_detail', order_id=order.id) }}">Cartas</a>
                     </div>
                 </td>
-                <td>
-                    <div class="d-flex align-items-center">
-                        <!-- Cancel Order -->
-                        <a class="btn btn-sm" role="button"
-                           hx-post="{{ url_for('cancel_order', order_id=order.id) }}"
-                           hx-trigger='confirmed'
-                           hx-swap="outerHTML"
-                           onClick="Swal.fire({title: '¿Estás seguro de cancelar este pedido?', text:'Pedido #{{ order.id }}'}).then((result)=>{
-                                   if(result.isConfirmed){
-                                        htmx.trigger(this, 'confirmed');
-                                        location.reload();
-                                   }
-                           })">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="red" class="bi bi-x" viewBox="0 0 16 16">
-                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
-                            </svg>
-                        </a>
-                    </div>
-                </td>
+                {% if not order.estado in ["En camino", "Entregado"] %}
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <!-- Cancel Order -->
+                            <a class="btn btn-sm" role="button"
+                               hx-post="{{ url_for('cancel_order', order_id=order.id) }}"
+                               hx-trigger='confirmed'
+                               hx-swap="outerHTML"
+                               onClick="Swal.fire({title: '¿Estás seguro de cancelar este pedido?', text:'Pedido #{{ order.id }}'}).then((result)=>{
+                                       if(result.isConfirmed){
+                                       htmx.trigger(this, 'confirmed');
+                                       location.reload();
+                                       }
+                                       })">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="red" class="bi bi-x" viewBox="0 0 16 16">
+                                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </td>
+                {% else %}
+                    <td>
+                    </td>
+                {% endif %}
             </tr>
         {% endfor %}
         </tbody>

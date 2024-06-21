@@ -742,7 +742,8 @@ def search_orders_admin():
             "fecha_entrega": datetime.strftime(
                 order.estimated_delivery_date,
                 "%d-%m-%Y") if order.estimated_delivery_date else "",
-            "estado": order.status.value
+            "estado": order.status.value,
+            "direccion_entrega": order.delivery_information
         })
     return render_template(
         'admin/orders_table.html',
@@ -825,7 +826,8 @@ def orders_representante_list():
                 "fecha_pedido": order.creation_date,
                 "fecha_entrega": datetime.strftime(order.estimated_delivery_date, "%d-%m-%Y")
                 if order.estimated_delivery_date else "",
-                "estado": order.status.value
+                "estado": order.status.value,
+                "direccion_entrega": order.delivery_information
             })
         return render_template('representante/orders_table_representante.html',
                                orders=new_dict_orders_list_representante,
@@ -928,6 +930,7 @@ def add_order_record():
     medico_solicitante = request.form.get('medico_solicitante')
     posicion_medico = request.form.get('posicion_medico')
     nombre_institucion = request.form.get('nombre_institucion')
+    direccion_entrega = request.form.get('direccion_entrega')
 
     # Filtrar los valores que contienen 'quantity_insumo'
     values = [key for key in request.form.keys()]
@@ -964,7 +967,8 @@ def add_order_record():
                 doctor_name=medico_solicitante,
                 doctor_position=posicion_medico,
                 total=total_cost,
-                data=insumos_for_order
+                data=insumos_for_order,
+                delivery_information=direccion_entrega
             )
             db.session.add(order)
             db.session.commit()
@@ -1095,7 +1099,8 @@ def edit_order(order_id):
             order = Order.query.get(order_id)
             general_statuses_for_admin = [status for status in OrderStatus if status != OrderStatus.CREADA]
             if request.method == "POST":
-                order.estimated_delivery_date = estimated_delivery_date
+                if estimated_delivery_date:
+                    order.estimated_delivery_date = estimated_delivery_date
                 order.status = status
                 db.session.commit()
                 return render_template(

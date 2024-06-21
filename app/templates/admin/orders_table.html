@@ -10,6 +10,7 @@
             <th>Total</th>
             <th>Fecha del Pedido</th>
             <th>Fecha entrega</th>
+            <th>Dirección de entrega</th>
             <th>Estado</th>
             <th>Cartas</th>
             <th>Acción</th>
@@ -27,6 +28,7 @@
                 <td>${{ order.total }}</td>
                 <td>{{ order.fecha_pedido.strftime('%d-%m-%Y') }}</td>
                 <td>{{ order.fecha_entrega }}</td>
+                <td>{{ order.direccion_entrega }}</td>
                 <td style="color: {% if order.estado == 'Entregado' %}#118632{% elif order.estado == 'Cancelado' %}#D71A1AF2{% elif order.estado == 'En camino' %}#FF8832{% elif order.estado == 'Creado' %}blue{% else %}black{% endif %}">
                     <div class="d-flex align-items-center">
                         <button type="button" class="btn p-1 rounded-circle me-2" style="background-color: {% if order.estado == 'Entregado' %}#118632{% elif order.estado == 'Cancelado' %}#D71A1AF2{% elif order.estado == 'En camino' %}#FF8832{% elif order.estado == 'Creado' %}blue{% else %}black{% endif %}"></button>

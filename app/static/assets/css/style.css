@@ -134,12 +134,12 @@ table tr:last-child td:last-child {
 }
 
 #fixed-card-registro-representante{
-    height: 600px; /* Adjust the height as needed */
+    height: 750px; /* Adjust the height as needed */
     overflow: hidden;
 }
 
 #fixed-card-login-representante{
-    height: 600px; /* Adjust the height as needed */
+    height: 650px; /* Adjust the height as needed */
     overflow: hidden;
 }
 
@@ -198,6 +198,14 @@ table tr:last-child td:last-child {
     font-weight: 300;
     text-align: left;
     color: #000000;
+}
+
+#form_text_password_information_signup{
+    font-family: Poppins;
+    font-size: 10px;
+    font-weight: 300;
+    text-align: left;
+    color: #0075A6;
 }
 
 .login_signup_input{
